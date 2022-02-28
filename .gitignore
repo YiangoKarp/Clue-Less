@@ -1,0 +1,5 @@
+virtualEnv1
+.qt_for_python
+original_game_rules.md
+diagrams/*.drawio
+__pycache__
