@@ -16,7 +16,7 @@ PR --> | Initialize Game | 1.1((1.1 Deal Cards))
 2.1 --> PL[Player Locations]
 PL --> 1.4((Update Player Locations in GUI)) 
 2.1 --> | Initial Turn |3.1((3.1 Toggle Player Turn))
-3.1 --> | Finish Turn | TT[Turn Tracker]
+3.1 --> TT[Turn Tracker]
 TT --> 3.1
 
 3.1 --> | Player Suggestion | 3.3((3.3 Validate Player Room))
@@ -30,7 +30,7 @@ PL --> 3.3
 PR --> | Check if player has any of the cards | PC
 PC --> | Left Player has any of the suggested three cards | 4.1((4.1 Choose card to share))
 4.1 --> PCC[Player Card Checklist]
-PCC --> | Finish Turn | TT
+PCC --> TT
 
 PC --> | Left Player has none of the suggested cards | 4.2((4.2 Get next Left Player))
 4.2 --> PR
