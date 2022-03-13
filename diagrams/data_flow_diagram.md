@@ -15,8 +15,8 @@ PR --> | Initialize Game | 1.1((1.1 Deal Cards))
 1.2 --> 2((2 Spawn Players))
 2 --> PL[Player Locations]
 PL --> 1.4((Update Player Locations in GUI)) 
-2 --> | Initial Turn |3.1((3.1 Toggle Player Turn))
-3.1 --> TT[Turn Tracker]
+2 --> | Initial Turn |3.1((3.1 Player's Turn))
+3.1 --> TT[Turn Toggler]
 TT --> 3.1
 
 3.1 --> | Player Suggestion | 3.3((3.3 Validate Player Room))
@@ -25,7 +25,6 @@ PL --> 3.3
 3.3 --> | Valid Suggestion | 3.2((3.2 Teleport Suggested Player))
 3.2 --> | Update Player Location | PL
 3.2 --> ST[Suggestions Table]
-3.2 --> 3.7((3.7 ??))
 3.2 --> | Player to the left | PR
 PR --> | Check if player has any of the cards | PC
 PC --> | Left Player has any of the suggested three cards | 4.1((4.1 Choose card to share))
