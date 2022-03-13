@@ -14,7 +14,7 @@ PR --> | Initialize Game | 1.1((1.1 Deal Cards))
 1.2 --> 1.3((1.3 Display Extra Cards in GUI))
 1.2 --> 2((2 Spawn Players))
 2 --> PL[Player Locations]
-PL --> 1.4((Update Player Locations in GUI)) 
+PL --> 1.4((1.4  Update Player Locations in GUI)) 
 2 --> | Initial Turn |3.1((3.1 Player's Turn))
 3.1 --> TT[Turn Toggler]
 TT --> 3.1
