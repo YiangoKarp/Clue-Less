@@ -34,6 +34,10 @@ CF --> 3.4
 3.6 --> PL
 3.6 --> 3.1
 
+3.1 --> | Player Navigation | NL[Navigation Lookup Table]
+NL --> | Valid Navigation | PL
+NL --> | Invalid Navigation | 3.1
+PL --> 3.1
 
 
 ```
