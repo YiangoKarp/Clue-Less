@@ -75,7 +75,7 @@ print(player_accusation('a','b','c'))
 def game_map():
 
     map = f'''
-            A                B                 C
+            A       B        C       D         E
          _______          _______          _________
         |       |________|       |________|         |
     1   | Study _________  Hall  _________  Lounge  |
@@ -92,3 +92,5 @@ def game_map():
         |_______|        |_______|        |_________|
     '''
     return(map)
+
+
