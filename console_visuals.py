@@ -50,11 +50,11 @@ def room_options():
 def player_suggestion(murderer, weapon, room):
     suggestion = Fore.YELLOW + f'''
     +----------------------+
-    |      SUGGESTION      |
+           SUGGESTION     
     +----------------------+
-    | Murderer: {murderer} |
-    | Weapon: {weapon}     |
-    | Room: {room}         |
+    * Murderer: {murderer} 
+    * Weapon: {weapon}     
+    * Room: {room}         
     +----------------------+
     ''' + Style.RESET_ALL
     return(suggestion)
@@ -62,12 +62,33 @@ def player_suggestion(murderer, weapon, room):
 def player_accusation(murderer, weapon, room):
     accusation = Fore.RED + f'''
     +----------------------+
-    |      ACCUSATION      |
+           ACCUSATION      
     +----------------------+
-    | Murderer: {murderer} |
-    | Weapon: {weapon}     |
-    | Room: {room}         |
+    * Murderer: {murderer} 
+    * Weapon: {weapon}     
+    * Room: {room}         
     +----------------------+
     ''' + Style.RESET_ALL
-    return(accusation)
 
+print(player_accusation('a','b','c'))
+
+def game_map():
+
+    map = f'''
+            A                B                 C
+         _______          _______          _________
+        |       |________|       |________|         |
+    1   | Study _________  Hall  _________  Lounge  |
+        |__   __|        |__   __|        |__    ___|
+           | |              | |              |  |
+         __| |__          __| |__          __|  |___
+        |       |________|       |________|         |
+    2   |Library _________Billiard_________ Dining  |
+        |__   __|        |__   __|        |__    ___|
+           | |              | |              |  |
+         __| |__          __| |__          __|  |___
+        |       |________|       |________|         |
+    3   |Conserv ________Ball Room_________ Kitchen |
+        |_______|        |_______|        |_________|
+    '''
+    return(map)
