@@ -70,27 +70,32 @@ def player_accusation(murderer, weapon, room):
     +----------------------+
     ''' + Style.RESET_ALL
 
-print(player_accusation('a','b','c'))
 
 def game_map():
-
+    '''Print the game map'''
     map = f'''
             A       B        C       D         E
          _______          _______          _________
-        |       |________|       |________|         |
-    1   | Study _________  Hall  _________  Lounge  |
+        |       |________|       |___H1___|         |
+    1   | Study  ________  Hall   ________  Lounge  |
         |__   __|        |__   __|        |__    ___|
            | |              | |              |  |
+    2    H6| |              | |              |  |H2
          __| |__          __| |__          __|  |___
         |       |________|       |________|         |
-    2   |Library _________Billiard_________ Dining  |
+    3   |Library _________Billiard________  Dining  |
         |__   __|        |__   __|        |__    ___|
            | |              | |              |  |
+    4    H5| |              | |              |  |
          __| |__          __| |__          __|  |___
         |       |________|       |________|         |
-    3   |Conserv ________Ball Room_________ Kitchen |
-        |_______|        |_______|        |_________|
+    5   |Conserv ________Ball Room_________ Kitchen |
+        |_______|   H4   |_______|   H3   |_________|
     '''
     return(map)
+
+def extra_cards():
+    '''Print the extra cards on the board'''
+    pass
 
 
