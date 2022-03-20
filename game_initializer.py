@@ -70,12 +70,12 @@ class GameInitializer:
             ec.is_extra_card = True # Mark extra card
 
 
-    def assign_character_names(self):
-        '''Each player in the game is assigned a character name'''
-        counter = 0
-        for p in self.players:
-            p.character = self.suspect_cards[counter].name # Assign each player a random character
-            counter += 1 
+    # def assign_character_names(self):
+    #     '''Each player in the game is assigned a random character name'''
+    #     counter = 0
+    #     for p in self.players:
+    #         p.character = self.suspect_cards[counter].name # Assign each player a random character
+    #         counter += 1 
 
 
     def initialize_player_locations(self):
