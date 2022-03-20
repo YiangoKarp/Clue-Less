@@ -112,4 +112,5 @@ sch.broadcast(console_visuals.game_logo())
 # TODO Consider putting game flow in a main script
 # TODO Create a logging class
 # TODO Create a navigation table
+# TODO Create a game initializer diagram
 # TODO Create the Game Manager Class
