@@ -12,6 +12,22 @@ def game_logo():
     ''' + Style.RESET_ALL
     return(game_logo)
 
+def suspects():
+    '''Print the suspect options'''
+    suspects = '''
+    +----------------------+
+    |      Suspects        |
+    +----------------------+
+    | [1] Miss Scarlet     |
+    | [2] Col. Mustard     |
+    | [3] Mrs. White       |
+    | [4] Mr. Green        |
+    | [5] Mrs. Peacock     |
+    | [6] Prof. Plum       |
+    +----------------------+
+    '''
+    return(suspects)
+
 def options():
     '''Print the options for suspect and weapon'''
     options = '''
