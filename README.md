@@ -1,6 +1,6 @@
 # Clue-Less
 
-This repo will host efforts to build the Clue-Less game.
+This repo will host efforts to build the Clue-Less game. Feel free to add Issues so that we can organize the work that has to be done.
 
 
 ## Code Walkthrough
