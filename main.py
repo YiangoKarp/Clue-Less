@@ -58,5 +58,47 @@ def main():
     # gi.initialize_player_locations()
     # print(gi.players[0])
 
+    # BRAINSTORMING
+    # Steps of GameManager process
+    # - GameManager receives as inputs: players, cards
+    # - initialize Room objects (actually for GameInitializer?)
+    # - randomize player order (actually for GameInitializer?)
+    #   - would require another input to GameManager
+    #   - store player order
+    #   - inform players of order
+    # - first turns for each player, in order
+    #   - (everyone's first turn is moving from starting location to adjacent hallway)
+    #   - broadcast player moves to everyone
+    #   - update Player location
+    #   - update Room players list
+    # - typical turn for player1
+    #   - GameManager sends player options (move options, suggest [if available], accuse)
+    #       - move options determined by Room where player currently is
+    #   - if player moves:
+    #       - player chooses move option, choice sent back to GameManager
+    #       - GameManager updates player's location
+    #       - update room's players present
+    #   - if no move options available:
+    #       - message player
+    #   -
+
+    # Classes
+    # - Location
+    #   - list of players present
+    #   - location type (starting spot, room, hallway)
+    #   - max number of players (determined by location type)
+    #   - available to move (determined by max number of players and players present; if starting spot, always FALSE)
+    #   - list of adjacent locations
+
+    # Methods needed
+    # - (for many, receiving input from user - see assign_username in server_connection_handler for example)
+    # - Use server_connection_handler's message_user and broadcast methods to message players
+    # - SendOptions
+    # - MovePlayer
+    # - MakeSuggestion
+    # - MakeAccusation
+    #
+    # - EndGame?
+
 if __name__ == '__main__':
     main()
