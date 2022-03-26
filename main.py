@@ -26,8 +26,10 @@ from colorama import Fore, Back, Style
 
 from server_connection_handler import ServerConnectionHandler
 from game_initializer import GameInitializer
+from game_manager import GameManager
 
 init() # Invoke console coloring
+
 
 def main():
     
@@ -52,47 +54,37 @@ def main():
     gi.initialize_cards()
     gi.initialize_player_locations()
 
+    # Randomize player turn order (add method to GameInitializer?)
+
+
+    # Initialize Room objects (add method to GameInitializer?)
+
+
+    # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
+
+
+    # Initialize GameManager
+    gm = GameManager(gi.players, gi.game_cards)
+
+    # Run the game
+    while not gm.game_over:
+        player_going = gm.players[gm.player_num_going]
+        end_turn = gm.run_turn(player_going)
+        if end_turn == "Accuse":
+            end_accusation = gm.run_accusation(player_going)
+        gm.move_to_next_turn()
+
+    # End game using the information in the end_accusation object from gm.run_accusation
+    # (basically just congratulate the winner properly, and then ask if they'd like to play again)
+
+
+    # Need unit test for GameManager
+
     #users = {'USER_1': 'ID_1', 'USER_2': 'ID_2', 'USER_3': 'ID_3', 'USER_4' : 'ID_4', 'USER_5': 'ID_5'}
     # gi = GameInitializer(users)
     # gi.initialize_cards()
     # gi.initialize_player_locations()
     # print(gi.players[0])
-
-    # BRAINSTORMING
-    # Steps of GameManager process
-    # - GameManager receives as inputs: players, cards
-    # - initialize Room objects (actually for GameInitializer?)
-    # - randomize player order (actually for GameInitializer?)
-    #   - GameManager will just use the order of the players input
-    #   - inform players of order
-    # - first turns for each player, in order
-    #   - (everyone's first turn is moving from starting location to adjacent hallway)
-    #   - broadcast player moves to everyone
-    #   - update Player location
-    #   - update Room players list
-    # - typical turn for player1
-    #   - GameManager sends player options (move options, suggest [if available], accuse)
-    #       - move options determined by Room where player currently is
-    #   - if player moves:
-    #       - player chooses move option, choice sent back to GameManager
-    #       - GameManager updates player's location
-    #       - update room's players present
-    #   - if no move options available:
-    #       - message player
-    #   -
-
-    # CONSIDERATIONS
-    # - how to denote that a player has already moved, already suggested, etc in a turn?
-
-    # Methods needed
-    # - (for many, receiving input from user - see assign_username in server_connection_handler for example)
-    # - Use server_connection_handler's message_user and broadcast methods to message players
-    # - SendOptions
-    # - MovePlayer
-    # - MakeSuggestion
-    # - MakeAccusation
-    #
-    # - EndGame?
 
 if __name__ == '__main__':
     main()
