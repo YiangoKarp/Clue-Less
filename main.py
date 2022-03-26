@@ -33,7 +33,7 @@ def main():
     
     sch = ServerConnectionHandler()
     sch.muster_clients()
-    sch.broadcast('All players have joined. Starting game!')
+    sch.broadcast(Fore.GREEN + 'All players have joined. Starting game!' + Style.RESET_ALL)
     sch.broadcast(console_visuals.game_logo())
 
     available_characters = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -56,7 +56,9 @@ def main():
     # gi = GameInitializer(users)
     # gi.initialize_cards()
     # gi.initialize_player_locations()
-    # print(gi.players[0])
+    print(gi.players)
+    print(gi.case_file_cards)
+    print(gi.extra_cards)
 
 if __name__ == '__main__':
     main()
