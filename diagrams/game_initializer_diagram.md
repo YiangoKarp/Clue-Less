@@ -18,6 +18,10 @@ AL -.-> P4
 AL -.-> P5
 AL -.-> P6
 
+AC -.-> EC[Extra Cards]
+EC --> GM
+
+
 CF --> GM((Game Manager))
 P1 --> GM
 P2 --> GM
