@@ -63,8 +63,7 @@ def main():
     # - GameManager receives as inputs: players, cards
     # - initialize Room objects (actually for GameInitializer?)
     # - randomize player order (actually for GameInitializer?)
-    #   - would require another input to GameManager
-    #   - store player order
+    #   - GameManager will just use the order of the players input
     #   - inform players of order
     # - first turns for each player, in order
     #   - (everyone's first turn is moving from starting location to adjacent hallway)
@@ -82,13 +81,8 @@ def main():
     #       - message player
     #   -
 
-    # Classes
-    # - Location
-    #   - list of players present
-    #   - location type (starting spot, room, hallway)
-    #   - max number of players (determined by location type)
-    #   - available to move (determined by max number of players and players present; if starting spot, always FALSE)
-    #   - list of adjacent locations
+    # CONSIDERATIONS
+    # - how to denote that a player has already moved, already suggested, etc in a turn?
 
     # Methods needed
     # - (for many, receiving input from user - see assign_username in server_connection_handler for example)
