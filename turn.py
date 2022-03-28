@@ -13,7 +13,7 @@ class Turn:
 
     def generate_player_options(self, player):
         options = []
-        move_options = self.generate_player_move_options()
+        move_options = self.generate_player_move_options(player)
 
         # Player can only move if there are open locations next to their location and they have not already moved
         if len(move_options) > 0 and not self.moved:
