@@ -19,7 +19,7 @@ class GameManager:
 
     def run_turn(self, player):
         turn = Turn(player)
-        player_options = turn.generate_player_options(player, turn)
+        player_options = turn.generate_player_options(player)
 
         player_choice = turn.receive_player_choice(player, player_options)
 
