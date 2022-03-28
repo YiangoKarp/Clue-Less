@@ -26,14 +26,16 @@ from colorama import Fore, Back, Style
 
 from server_connection_handler import ServerConnectionHandler
 from game_initializer import GameInitializer
+from game_manager import GameManager
 
 init() # Invoke console coloring
+
 
 def main():
     
     sch = ServerConnectionHandler()
     sch.muster_clients()
-    sch.broadcast('All players have joined. Starting game!')
+    sch.broadcast(Fore.GREEN + 'All players have joined. Starting game!' + Style.RESET_ALL)
     sch.broadcast(console_visuals.game_logo())
 
     available_characters = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -52,11 +54,39 @@ def main():
     gi.initialize_cards()
     gi.initialize_player_locations()
 
+    # Randomize player turn order (add method to GameInitializer?)
+
+
+    # Initialize Room objects (add method to GameInitializer?)
+
+
+    # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
+
+
+    # Initialize GameManager
+    gm = GameManager(gi.players, gi.game_cards)
+
+    # Run the game
+    while not gm.game_over:
+        player_going = gm.players[gm.player_num_going]
+        end_turn = gm.run_turn(player_going)
+        if end_turn == "Accuse":
+            end_accusation = gm.run_accusation(player_going)
+        gm.move_to_next_turn()
+
+    # End game using the information in the end_accusation object from gm.run_accusation
+    # (basically just congratulate the winner properly, and then ask if they'd like to play again)
+
+
+    # Need unit test for GameManager
+
     #users = {'USER_1': 'ID_1', 'USER_2': 'ID_2', 'USER_3': 'ID_3', 'USER_4' : 'ID_4', 'USER_5': 'ID_5'}
     # gi = GameInitializer(users)
     # gi.initialize_cards()
     # gi.initialize_player_locations()
-    # print(gi.players[0])
+    print(gi.players)
+    print(gi.case_file_cards)
+    print(gi.extra_cards)
 
 if __name__ == '__main__':
     main()
