@@ -61,7 +61,13 @@ class TestGameInitializer(unittest.TestCase):
         users = {'USER_1': 'ID_1', 'USER_2': 'ID_2', 'USER_3': 'ID_3', 'USER_4' : 'ID_4', 'USER_5': 'ID_5'}
         gi = GameInitializer(users)
         gi.initialize_cards()
-        gi.assign_character_names()
+
+        gi.players[0].character = "Miss Scarlet"
+        gi.players[1].character = "Col. Mustard"
+        gi.players[2].character = "Mrs. White"
+        gi.players[3].character = "Mr. Green"
+        gi.players[4].character = "Mrs. Peacock"
+        
         gi.initialize_player_locations()
         for p in gi.players:
             self.assertTrue(p.location[0] == 'H')
