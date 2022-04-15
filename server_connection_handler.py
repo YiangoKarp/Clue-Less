@@ -4,7 +4,7 @@ from http import server
 import socket
 import urllib.request
 import time
-import console_visuals
+import console_visuals as vi
 import sys
 from tqdm import tqdm
 from colorama import init
@@ -94,6 +94,45 @@ class ServerConnectionHandler():
         client.send(f'You have selected {selected_character}!'.encode('utf-8'))
 
         return selected_character
+
+    def play_again_vote(self):
+        '''Handle player voting to determine if another game should be played.
+        
+        Returns:
+            boolean: Whether or not to play again
+        '''
+
+        play_again_tally = 0
+
+        for client in self.clients:
+            client.send('Would you like to play again?\n [1] Yes [2] No'.encode('utf-8'))
+            selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            if selection == 1:
+                play_again_tally+=1
+
+        vote = play_again_tally/len(self.clients)
+        if vote > 0.5:
+            # Majority voted to play again
+            self.broadcast('The majority vote is to play again!')
+            return True
+        elif vote == 0.5:
+            # Equal vote on both sides
+            self.broadcast('The vote was 50-50. Please make up your minds and vote again!')
+            self.play_again_vote(self)
+        else:
+            # Majority voted to stop playing
+            self.broadcast("The majority voted to stop playing. Goodbye!")
+            return False
+
+    def kick_players(self):
+        '''Kick all of the players in the game. Close the connection socket gracefully.'''
+        # Send message client app to signal disconnection
+        for client in self.clients:
+            client.send('kick'.encode('utf-8'))
+        self.clients = [] # Wipe clients from SCH
+        
+
+
         
 
 

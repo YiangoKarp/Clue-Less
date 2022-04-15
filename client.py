@@ -38,7 +38,12 @@ class Client:
             try:
                 msg = self.client.recv(3000).decode('utf-8')
                 if msg:
-                    print(msg)
+                    if(msg == 'kick'):
+                        print('You have been disconnected from the server.')
+                        self.client.shutdown(socket.SHUT_RDWR)
+                        self.client.close()
+                    else:
+                        print(msg)
                 else:
                     break
             except Exception as rx_error:
