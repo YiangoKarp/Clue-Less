@@ -37,7 +37,7 @@ class GameManager:
                 # Move the player
                 self.move_player(player, player_move_choice)
             if player_choice == "Suggest":
-                # Get string names of character, weapon, and room for suggestion
+                # Get string names of character, weapon, and room for suggestion, in that order
                 suggestion_values = self.get_suggestion_values(player)
 
                 # Inform all players of the suggestion
@@ -46,7 +46,17 @@ class GameManager:
                               suggestion_values[1] + "!"
                 self.broadcast(suggest_msg)
 
-                # Don't need to pass the room as an argument since that's stored in the Player object
+                # Find if any player is playing as the suggested character
+                player_to_move = None
+                for p in self.players:
+                    if p.character == suggestion_values[0]:
+                        player_to_move = p
+
+                # If the player exists, move them
+                if player_to_move is not None:
+                    self.move_player(player_to_move, player.location)
+
+                # Run the suggestion
                 self.make_suggestion(player, suggestion_values)
 
             player_options = turn.generate_player_options(player, turn)
