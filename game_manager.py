@@ -122,6 +122,8 @@ class GameManager:
         if player.location.max_players <= len(player.location.players_present):
             player.location.movable = False
 
+        self.broadcast(player.username + " moved to " + new_location.name)
+
     # For the UI, we will have to change this to a pop-up or something
     def get_suggestion_values(self, player):
         suggest_char_prompt = """Which character committed the crime: 
@@ -213,14 +215,20 @@ class GameManager:
     # Keep run_accusation separate from run_turn since run_turn either returns 'Accuse' or 'End Turn'
     # We will call run_turn and run_accusation separately in the main script
     def run_accusation(self, player):
+        # Get accusation values
 
+        # Broadcast to all players the accusation
+
+        # Check accusation values against answer
 
         # If accusation is correct, set self.game_over to True
-        # If len(self.players) < 2, set self.game_over to True
 
-
+        # If accusation if wrong, remove player from the players list
         # Need to be careful to adjust player_num_going if the player removed comes before the player going
         # in the players list
+
+        # If len(self.players) < 2, set self.game_over to True
+
         return
 
     def character_name_list(self):
