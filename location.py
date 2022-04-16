@@ -1,11 +1,14 @@
 # location.py
 
 class Location:
-    def __init__(self, name, location_type, adjacent_locations = None, players_present = None):
+
+    locations = {} # This static dictionary will hold all of the location objects on the game map.
+
+    def __init__(self, name, location_type, players_present = None):
         self.name = name
         self.location_type = location_type
-        # Start adjacent_locations as None because we will need to initialize all locations before assigning neighbors
-        self.adjacent_locations = adjacent_locations
+        # Default adjacent_locations as empty because we will need to initialize all locations before assigning neighbors
+        self.adjacent_locations = []
         if self.location_type == "room":
             self.max_players = 6
         else:
@@ -26,4 +29,4 @@ class Location:
         return output
 
     def add_neighbors(self, neighbors):
-        self.adjacent_locations = neighbors
+        self.adjacent_locations.append(neighbors)

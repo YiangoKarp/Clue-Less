@@ -1,5 +1,7 @@
 import unittest
 from game_initializer import GameInitializer
+from location import Location
+
 
 class TestGameInitializer(unittest.TestCase):
     
@@ -61,10 +63,37 @@ class TestGameInitializer(unittest.TestCase):
         users = {'USER_1': 'ID_1', 'USER_2': 'ID_2', 'USER_3': 'ID_3', 'USER_4' : 'ID_4', 'USER_5': 'ID_5'}
         gi = GameInitializer(users)
         gi.initialize_cards()
-        gi.assign_character_names()
+
+        gi.players[0].character = "Miss Scarlet"
+        gi.players[1].character = "Col. Mustard"
+        gi.players[2].character = "Mrs. White"
+        gi.players[3].character = "Mr. Green"
+        gi.players[4].character = "Mrs. Peacock"
+
+        gi.generate_game_map()
         gi.initialize_player_locations()
         for p in gi.players:
-            self.assertTrue(p.location[0] == 'H')
+            self.assertTrue(p.location.name[0] == 'H') # Players will always begin in a Home square.
+            self.assertTrue(p.location.adjacent_locations[0].location_type == 'hallway') # Every home square should have one neighboring hallway.
+
+    def test_game_locations(self):
+        '''Ensure that the game map was properly configured'''
+        users = {'USER_1': 'ID_1', 'USER_2': 'ID_2', 'USER_3': 'ID_3', 'USER_4' : 'ID_4', 'USER_5': 'ID_5'}
+        gi = GameInitializer(users)
+        gi.initialize_cards()
+
+        gi.players[0].character = "Miss Scarlet"
+        gi.players[1].character = "Col. Mustard"
+        gi.players[2].character = "Mrs. White"
+        gi.players[3].character = "Mr. Green"
+        gi.players[4].character = "Mrs. Peacock"
+
+        gi.generate_game_map()
+        gi.initialize_player_locations()
+
+        self.assertTrue(len(list(filter(lambda loc: loc.location_type == 'room', Location.locations.values())))) # Ensure that there are 9 rooms
+        self.assertTrue(len(list(filter(lambda loc: loc.location_type == 'hallway', Location.locations.values())))) # Ensure that there are 12 hallways
+        self.assertTrue(len(list(filter(lambda loc: loc.location_type == 'home', Location.locations.values())))) # Ensure that there are 6 home squares
 
 if __name__ == '__main__':
     unittest.main()
