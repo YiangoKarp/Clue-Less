@@ -74,31 +74,22 @@ def main(mode = 'initial'):
 
 
     # Initialize GameManager
-    gm = GameManager(gi.players, gi.game_cards)
+    gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
 
     # Run the game
     while not gm.game_over:
         player_going = gm.players[gm.player_num_going]
         end_turn = gm.run_turn(player_going)
         if end_turn == "Accuse":
-            end_accusation = gm.run_accusation(player_going)
+            gm.run_accusation(player_going)
         else:
             gm.broadcast(player_going.username + " ended their turn.")
-        gm.move_to_next_turn()
+        # Only move to the next turn (i.e. find the next un-eliminated player) if the game is not over
+        if not gm.game_over:
+            gm.move_to_next_turn()
 
-    # End game using the information in the end_accusation object from gm.run_accusation
-    # (basically just congratulate the winner properly, and then ask if they'd like to play again)
-    #winner = end_accusation['winner']
-    #actual_suspect = end_accusation['actual_suspect']
-    #actual_weapon = end_accusation['actual_weapon']
-    #actual_room = end_accusation['actual_room']
-    end_accusation = {'winner' : 'Player 1',
-    'murderer' : 'Mr. Green',
-    'weapon' : 'Dagger',
-    'room' : 'Lounge'}
+    gm.end_game()
 
-    sch.broadcast(Fore.GREEN + f"The winner is {end_accusation['winner']}!" + Style.RESET_ALL) # Announce winner
-    print(vi.case_file_envelope(end_accusation)) # Print the contents of the case file envelope.
     sch.broadcast('Each player will now vote if they want to play another game.')
     if sch.play_again_vote():
         # Restart Game.

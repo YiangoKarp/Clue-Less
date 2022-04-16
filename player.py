@@ -11,6 +11,7 @@ class Player:
         # Track if the player was moved by suggestion between turns -> will affect options on their turn
         # -> always reset at the end of player's turn
         self.was_suggested = False
+        self.eliminated = False
 
     def __repr__(self):
         '''Player print() function'''
