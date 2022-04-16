@@ -70,10 +70,11 @@ def main(mode = 'initial'):
     # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
 
 
+    # Show untaken cards to all players and update checklists
+
+
     # Initialize GameManager
     gm = GameManager(gi.players, gi.game_cards)
-
-    gm.game_over = True # Force Game Over (For Testing)
 
     # Run the game
     while not gm.game_over:
@@ -81,6 +82,8 @@ def main(mode = 'initial'):
         end_turn = gm.run_turn(player_going)
         if end_turn == "Accuse":
             end_accusation = gm.run_accusation(player_going)
+        else:
+            gm.broadcast(player_going.username + " ended their turn.")
         gm.move_to_next_turn()
 
     # End game using the information in the end_accusation object from gm.run_accusation

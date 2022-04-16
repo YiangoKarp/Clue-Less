@@ -86,7 +86,6 @@ def player_accusation(murderer, weapon, room):
     +----------------------+
     ''' + Style.RESET_ALL
 
-
 def game_map():
     '''Print the game map'''
     map = f'''

@@ -48,7 +48,7 @@ class ServerConnectionHandler():
         self.server.bind((host, 8080))
         self.server.listen(self.n_players)
 
-    def broadcast(self,msg):
+    def broadcast(self, msg):
         '''Send a message to all clients'''
         print(f"[Broadcast Message] {msg}")
         for c in self.clients:
@@ -70,7 +70,7 @@ class ServerConnectionHandler():
             pbar.update(1)
         pbar.close()
 
-    def assign_username(self,client):
+    def assign_username(self, client):
         '''Request that the client provide a username'''
         client.send('What would you like your username to be?: '.encode('utf-8'))
         username = client.recv(3000).decode('utf-8')
