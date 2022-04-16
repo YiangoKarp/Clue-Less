@@ -5,25 +5,34 @@ from turn import Turn
 
 
 class GameManager:
-    def __init__(self, players, cards):
+    def __init__(self, players, extra_cards, case_file_cards):
         self.players = players
-        self.cards = cards # Need to take cards as input because not all cards are held by players
+        # All Card objects are referencable through the players besides extra cards and case file cards
+        self.extra_cards = extra_cards
+        self.case_file_cards = case_file_cards
         self.game_over = False
         self.player_num_going = 0 # To track where in the players list we are for turns
 
-        self.extra_cards = []
-        self.case_file_cards = []
-        for c in cards:
-            if c.is_extra_card:
-                self.extra_cards.append(c)
-            if c.is_case_file_card:
-                self.case_file_cards.append(c)
-
     def move_to_next_turn(self):
-        if self.player_num_going + 1 == len(self.players):
-            self.player_num_going = 0
-        else:
-            self.player_num_going = self.player_num_going + 1
+        # Find the next un-eliminated player
+        found_player = False
+
+        while not found_player:
+            self.player_num_going = (self.player_num_going + 1) % len(self.players)
+
+            if not self.players[self.player_num_going].eliminated:
+                found_player = True
+
+        # Check how many players are left
+        players_left = 0
+
+        for p in self.players:
+            if not p.eliminated:
+                players_left = players_left + 1
+
+        # End the game if only 1 player remains
+        if players_left == 1:
+            self.game_over = True
 
     def run_turn(self, player):
         turn = Turn(player)
@@ -240,15 +249,12 @@ class GameManager:
             self.broadcast(player.username + "'s accusation was correct!")
             self.game_over = True
         else: # If accusation is wrong, remove player from the players list
+            self.broadcast(player.username + "'s accusation was wrong! " +
+                           player.username + " has been eliminated!")
 
+            player.eliminated = True
 
-
-        # Need to be careful to adjust player_num_going if the player removed comes before the player going
-        # in the players list
-
-        # If len(self.players) < 2, set self.game_over to True
-
-        return None
+        return # Nothing is returned. Moving to next turn will check the number of players left.
 
     # For the UI, we will have to change this to a pop-up or something
     def get_accusation_values(self, player):
@@ -314,6 +320,39 @@ class GameManager:
             correct_accuse = False
 
         return correct_accuse
+
+    def end_game(self):
+        # The player currently 'going' is the winner
+        player_going = gm.players[gm.player_num_going]
+
+        # Check for the type of game end
+        players_left = 0
+        for p in self.players:
+            if not p.eliminated:
+                players_left = players_left + 1
+        # If there is only 1 un-eliminated player, then they won by survival.
+        if players_left == 1:
+            self.broadcast(player_going.username + " is the last player remaining. They win!")
+        # Otherwise, they won with a successful accusation
+        else:
+            self.broadcast(player_going.username + " has won!")
+
+        # Find the case file card for the correct type for the answer broadcast
+        cf_char = None
+        cf_weap = None
+        cf_loc = None
+        for cfc in self.case_file_cards:
+            if cfc.type == "suspect":
+                cf_char = cfc
+            if cfc.type == "weapon":
+                cf_weap = cfc
+            if cfc.type == "room":
+                cf_loc = cfc
+
+        # Broadcast the answer to everyone
+        self.broadcast("It was " + cf_char.name + " with the " + cf_weap.name + " in the " + cf_loc.name)
+
+        return
 
     def character_name_list(self):
         return ["Miss Scarlet", "Col. Mustard", "Mrs. White", "Mr. Green", "Mrs. Peacock", "Prof. Plum"]
