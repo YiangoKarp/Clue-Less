@@ -11,6 +11,14 @@ class GameManager:
         self.game_over = False
         self.player_num_going = 0 # To track where in the players list we are for turns
 
+        self.extra_cards = []
+        self.case_file_cards = []
+        for c in cards:
+            if c.is_extra_card:
+                self.extra_cards.append(c)
+            if c.is_case_file_card:
+                self.case_file_cards.append(c)
+
     def move_to_next_turn(self):
         if self.player_num_going + 1 == len(self.players):
             self.player_num_going = 0
@@ -216,26 +224,106 @@ class GameManager:
     # We will call run_turn and run_accusation separately in the main script
     def run_accusation(self, player):
         # Get accusation values
+        accusation_values = self.get_accusation_values(player)
 
         # Broadcast to all players the accusation
+        accuse_msg = player.username + " is making an ACCUSATION: It was " + \
+                      accusation_values[0] + " in the " + accusation_values[2] + "with the " + \
+                      accusation_values[1] + "!"
+        self.broadcast(accuse_msg)
 
         # Check accusation values against answer
+        correct_accuse = self.check_accusation_values(accusation_values)
 
         # If accusation is correct, set self.game_over to True
+        if correct_accuse:
+            self.broadcast(player.username + "'s accusation was correct!")
+            self.game_over = True
+        else: # If accusation is wrong, remove player from the players list
 
-        # If accusation if wrong, remove player from the players list
+
+
         # Need to be careful to adjust player_num_going if the player removed comes before the player going
         # in the players list
 
         # If len(self.players) < 2, set self.game_over to True
 
-        return
+        return None
+
+    # For the UI, we will have to change this to a pop-up or something
+    def get_accusation_values(self, player):
+        accuse_char_prompt = """Which character committed the crime: 
+        Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
+
+        player.client_id.send(accuse_char_prompt.encode('utf-8'))
+        accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
+
+        # Error handling for incorrect suggestion player input
+        while accuse_char_choice not in self.character_name_list():
+            accuse_char_prompt = """Invalid character name entered.
+            Which character committed the crime: 
+            Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
+
+            player.client_id.send(accuse_char_prompt.encode('utf-8'))
+            accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
+
+        accuse_weapon_prompt = """Which weapon was used for the crime: 
+        candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
+
+        player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
+        accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
+
+        while accuse_weapon_choice not in self.weapon_name_list():
+            accuse_weapon_prompt = """Invalid weapon name entered.
+            Which weapon was used for the crime: 
+            candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
+
+            player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
+            accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
+
+        accuse_location_prompt = """Where did the crime happen: 
+        Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
+
+        player.client_id.send(accuse_location_prompt.encode('utf-8'))
+        accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
+
+        while accuse_location_choice not in self.location_name_list():
+            accuse_location_prompt = """Invalid weapon name entered.
+            Where did the crime happen: 
+            Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
+
+            player.client_id.send(accuse_location_prompt.encode('utf-8'))
+            accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
+
+        # Return the names of the character, weapon, and room (3 strings)
+        # Change to returning the cards? Or the names of the first 2 but then the Location object?
+        accusation_values = [accuse_char_choice, accuse_weapon_choice, accuse_location_choice]
+
+        return accusation_values
+
+    def check_accusation_values(self, accusation_values):
+        correct_count = 0
+        for acc_val in accusation_values:
+            for c in self.case_file_cards:
+                if acc_val == c.name:
+                    correct_count = correct_count + 1
+
+        if correct_count == 3:
+            correct_accuse = True
+        else:
+            correct_accuse = False
+
+        return correct_accuse
 
     def character_name_list(self):
         return ["Miss Scarlet", "Col. Mustard", "Mrs. White", "Mr. Green", "Mrs. Peacock", "Prof. Plum"]
 
     def weapon_name_list(self):
         return ["candlestick", "revolver", "dagger", "lead pipe", "rope", "wrench"]
+
+    def room_name_list(self):
+        return ["Study", "Hall", "Lounge", "Library", "Billiard Room", "Dining Room", "Conservatory",
+                "Ballroom", "Kitchen"]
 
     def broadcast(self, msg):
         '''Send a message to all clients'''

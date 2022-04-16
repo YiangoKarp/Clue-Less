@@ -70,6 +70,9 @@ def main(mode = 'initial'):
     # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
 
 
+    # Show untaken cards to all players and update checklists
+
+
     # Initialize GameManager
     gm = GameManager(gi.players, gi.game_cards)
 
