@@ -86,7 +86,6 @@ def player_accusation(murderer, weapon, room):
     +----------------------+
     ''' + Style.RESET_ALL
 
-
 def game_map():
     '''Print the game map'''
     map = f'''
@@ -110,8 +109,31 @@ def game_map():
     '''
     return(map)
 
-def extra_cards():
+def extra_cards(extra_cards):
     '''Print the extra cards on the board'''
-    pass
+    cards_names = [ card.name for card in extra_cards]
+    cards_string = ', '.join(cards_names)
+    extra_cards = f'Extra Cards: {cards_names}'
+    return extra_cards
 
+def player_cards(player):
+    '''Print the cards a specific player has'''
+    cards_names = [ card.name for card in player.cards]
+    cards_string = ', '.join(cards_names)
+    player_cards = f'Your Cards: {cards_names}'
+    return player_cards
+
+def case_file_envelope(end_accusation):
+    '''Print the contents of the case file envelope'''
+    case_file = f'''
+    Here are the contents of the case file:   
+    +----------------------+
+       Case File Envelope    
+    +----------------------+
+    * Murderer: {end_accusation['murderer']} 
+    * Weapon: {end_accusation['weapon']}     
+    * Room: {end_accusation['room']}         
+    +----------------------+
+    '''
+    return case_file
 

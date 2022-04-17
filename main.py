@@ -23,6 +23,7 @@ import sys
 from tqdm import tqdm
 from colorama import init
 from colorama import Fore, Back, Style
+import subprocess
 
 from server_connection_handler import ServerConnectionHandler
 from game_initializer import GameInitializer
@@ -32,6 +33,8 @@ init() # Invoke console coloring
 
 
 def main(mode = 'initial'):
+    
+    #subprocess.Popen('python game_driver.py', shell=False)
 
     if(mode == 'initial'):
         # Create the Server Connection Handler for the initial game.
@@ -41,7 +44,7 @@ def main(mode = 'initial'):
     if(mode in ['initial', 'kicked']):
         # Wait for clients to connect
         sch.muster_clients()
-        sch.broadcast(Fore.GREEN + 'All players have joined. Starting game!' + Style.RESET_ALL)
+        sch.broadcast(Fore.GREEN + 'All players have joined.' + Style.RESET_ALL)
         sch.broadcast(vi.game_logo())
 
     available_characters = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -70,32 +73,26 @@ def main(mode = 'initial'):
     # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
 
 
-    # Initialize GameManager
-    gm = GameManager(gi.players, gi.game_cards)
+    # Show untaken cards to all players and update checklists
 
-    gm.game_over = True # Force Game Over (For Testing)
+    sch.broadcast("Starting Game!")
+    # Initialize GameManager
+    gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
 
     # Run the game
     while not gm.game_over:
         player_going = gm.players[gm.player_num_going]
         end_turn = gm.run_turn(player_going)
         if end_turn == "Accuse":
-            end_accusation = gm.run_accusation(player_going)
-        gm.move_to_next_turn()
+            gm.run_accusation(player_going)
+        else:
+            gm.broadcast(player_going.username + " ended their turn.")
+        # Only move to the next turn (i.e. find the next un-eliminated player) if the game is not over
+        if not gm.game_over:
+            gm.move_to_next_turn()
 
-    # End game using the information in the end_accusation object from gm.run_accusation
-    # (basically just congratulate the winner properly, and then ask if they'd like to play again)
-    #winner = end_accusation['winner']
-    #actual_suspect = end_accusation['actual_suspect']
-    #actual_weapon = end_accusation['actual_weapon']
-    #actual_room = end_accusation['actual_room']
-    end_accusation = {'winner' : 'Player 1',
-    'murderer' : 'Mr. Green',
-    'weapon' : 'Dagger',
-    'room' : 'Lounge'}
+    gm.end_game()
 
-    sch.broadcast(Fore.GREEN + f"The winner is {end_accusation['winner']}!" + Style.RESET_ALL) # Announce winner
-    print(vi.case_file_envelope(end_accusation)) # Print the contents of the case file envelope.
     sch.broadcast('Each player will now vote if they want to play another game.')
     if sch.play_again_vote():
         # Restart Game.

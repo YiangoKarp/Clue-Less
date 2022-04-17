@@ -20,7 +20,6 @@ home_locations = {'Miss Scarlet': 'H1',
                   'Mrs. Peacock': 'H5',
                   'Prof. Plum': 'H6'}
 
-
 class GameInitializer:
     def __init__(self, users):    
         self.suspect_cards = [Card('suspect',s) for s in suspects]
