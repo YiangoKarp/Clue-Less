@@ -60,9 +60,9 @@ def options():
     '''
     return(options)
 
-def room_options():
+def rooms():
     '''Print all the room options'''
-    room_options = '''
+    rooms = '''
     +-------------------+
     |      Rooms        |
     +-------------------+
@@ -77,7 +77,7 @@ def room_options():
     | [9] Kitchen       |
     +-------------------+
     '''
-    return(room_options)
+    return(rooms)
 
 def player_suggestion(murderer, weapon, room):
     suggestion = Fore.YELLOW + f'''

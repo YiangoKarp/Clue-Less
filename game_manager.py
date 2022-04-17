@@ -164,9 +164,7 @@ class GameManager:
         while suggest_char_choice not in self.character_name_list():
             self.message_player(player, "Invalid character selection.")
             self.message_player(player,suggest_char_prompt)
-
-            self.message_player(player,suggest_char_prompt)
-            suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
+            suggest_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
         suggest_weapon_prompt = 'Which weapon was used for the crime?:' + vi.weapons()
 
@@ -265,48 +263,39 @@ class GameManager:
 
     # For the UI, we will have to change this to a pop-up or something
     def get_accusation_values(self, player):
-        accuse_char_prompt = """Which character committed the crime:
-        Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
-
+        accuse_char_prompt = 'Which character committed the crime?:' + vi.suspects()
         self.message_player(player,accuse_char_prompt)
-        accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
+        accuse_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        accuse_char_choice = self.character_name_list()[accuse_char_choice-1]
 
         # Error handling for incorrect suggestion player input
         while accuse_char_choice not in self.character_name_list():
-            accuse_char_prompt = """Invalid character name entered.
-            Which character committed the crime:
-            Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
-
+            self.message_player(player, "Invalid character selection.")
             self.message_player(player,accuse_char_prompt)
-            accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
+            accuse_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
-        accuse_weapon_prompt = """Which weapon was used for the crime:
-        candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
-
+        accuse_weapon_prompt = 'Which weapon was used for the crime?:' + vi.weapons()
         self.message_player(player,accuse_weapon_prompt)
-        accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
+        accuse_weapon_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        accuse_weapon_choice = self.weapon_name_list()[accuse_weapon_choice-1]
 
         while accuse_weapon_choice not in self.weapon_name_list():
-            accuse_weapon_prompt = """Invalid weapon name entered.
-            Which weapon was used for the crime:
-            candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
-
+            self.message_player(player, "Invalid weapon selection")
             self.message_player(player,accuse_weapon_prompt)
-            accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
+            accuse_weapon_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
         accuse_location_prompt = """Where did the crime happen:
         Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
-
+        
+        accuse_location_prompt = 'Where did the crime happen?: ' + vi.rooms()
         self.message_player(player,accuse_location_prompt)
-        accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
+        accuse_location_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        accuse_location_choice = self.room_name_list()[accuse_location_choice-1]
 
-        while accuse_location_choice not in self.location_name_list():
-            accuse_location_prompt = """Invalid weapon name entered.
-            Where did the crime happen:
-            Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
-
+        while accuse_location_choice not in self.room_name_list():
+            self.message_player(player, 'Invalid room selection.')
             self.message_player(player,accuse_location_prompt)
-            accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
+            accuse_location_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
         # Return the names of the character, weapon, and room (3 strings)
         # Change to returning the cards? Or the names of the first 2 but then the Location object?
