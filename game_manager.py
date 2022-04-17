@@ -38,7 +38,7 @@ class GameManager:
         turn = Turn(player)
         player_options = turn.generate_player_options(player)
 
-        player_choice = turn.receive_player_choice(player, player_options)
+        player_choice = self.receive_player_choice(player, player_options)
 
         # While the player has not ended their turn or made an accusation:
         # 1. Execute player's choice,
@@ -76,26 +76,31 @@ class GameManager:
                 # Run the suggestion
                 self.make_suggestion(player, suggestion_values)
 
-            player_options = turn.generate_player_options(player, turn)
+            player_options = turn.generate_player_options(player)
 
-            player_choice = turn.receive_player_choice(player, player_options)
+            player_choice = self.receive_player_choice(player, player_options)
 
         # Return player choice because it could end on End Turn or Accuse
         # GameManager will act differently, depending on the result of the turn
         return player_choice
 
     def receive_player_choice(self, player, player_options):
-        options_prompt = "What would you like to do?: " + player_options[0]
+        options = ''
+        for i in enumerate(player_options):
+            options += f'[{i[0]+1}] {i[1]}\n'
 
-        for option in player_options[1:]:
-            options_prompt = options_prompt + option
+        #options_prompt = "What would you like to do?: " + player_options[0]
+        options_prompt = f'What would you like to do? \n{options}'
+
+        '''for option in player_options[1:]:
+            options_prompt = options_prompt + option'''
 
         # Send options prompt to user and receive their choice as numeric input
         player.client_id.send(options_prompt.encode('utf-8'))
         player_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Error handling for incorrect user input
-        while player_choice not in player_options:
+        while player_choice not in player_options:#['1','2','3']: #player_options:
             error_options_prompt = "Invalid choice entered. " + options_prompt
 
             player.client_id.send(error_options_prompt.encode('utf-8'))
@@ -143,7 +148,7 @@ class GameManager:
 
     # For the UI, we will have to change this to a pop-up or something
     def get_suggestion_values(self, player):
-        suggest_char_prompt = """Which character committed the crime: 
+        suggest_char_prompt = """Which character committed the crime:
         Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
         player.client_id.send(suggest_char_prompt.encode('utf-8'))
@@ -152,13 +157,13 @@ class GameManager:
         # Error handling for incorrect suggestion player input
         while suggest_char_choice not in self.character_name_list():
             suggest_char_prompt = """Invalid character name entered.
-            Which character committed the crime: 
+            Which character committed the crime:
             Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
             player.client_id.send(suggest_char_prompt.encode('utf-8'))
             suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
 
-        suggest_weapon_prompt = """Which weapon was used for the crime: 
+        suggest_weapon_prompt = """Which weapon was used for the crime:
         candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
         player.client_id.send(suggest_weapon_prompt.encode('utf-8'))
@@ -166,7 +171,7 @@ class GameManager:
 
         while suggest_weapon_choice not in self.weapon_name_list():
             suggest_weapon_prompt = """Invalid weapon name entered.
-            Which weapon was used for the crime: 
+            Which weapon was used for the crime:
             candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
             player.client_id.send(suggest_weapon_prompt.encode('utf-8'))
@@ -258,7 +263,7 @@ class GameManager:
 
     # For the UI, we will have to change this to a pop-up or something
     def get_accusation_values(self, player):
-        accuse_char_prompt = """Which character committed the crime: 
+        accuse_char_prompt = """Which character committed the crime:
         Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
         player.client_id.send(accuse_char_prompt.encode('utf-8'))
@@ -267,13 +272,13 @@ class GameManager:
         # Error handling for incorrect suggestion player input
         while accuse_char_choice not in self.character_name_list():
             accuse_char_prompt = """Invalid character name entered.
-            Which character committed the crime: 
+            Which character committed the crime:
             Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
             player.client_id.send(accuse_char_prompt.encode('utf-8'))
             accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
 
-        accuse_weapon_prompt = """Which weapon was used for the crime: 
+        accuse_weapon_prompt = """Which weapon was used for the crime:
         candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
         player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
@@ -281,13 +286,13 @@ class GameManager:
 
         while accuse_weapon_choice not in self.weapon_name_list():
             accuse_weapon_prompt = """Invalid weapon name entered.
-            Which weapon was used for the crime: 
+            Which weapon was used for the crime:
             candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
             player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
             accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
-        accuse_location_prompt = """Where did the crime happen: 
+        accuse_location_prompt = """Where did the crime happen:
         Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
 
         player.client_id.send(accuse_location_prompt.encode('utf-8'))
@@ -295,7 +300,7 @@ class GameManager:
 
         while accuse_location_choice not in self.location_name_list():
             accuse_location_prompt = """Invalid weapon name entered.
-            Where did the crime happen: 
+            Where did the crime happen:
             Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
 
             player.client_id.send(accuse_location_prompt.encode('utf-8'))
@@ -323,7 +328,7 @@ class GameManager:
 
     def end_game(self):
         # The player currently 'going' is the winner
-        player_going = gm.players[gm.player_num_going]
+        player_going = self.players[self.player_num_going]
 
         # Check for the type of game end
         players_left = 0

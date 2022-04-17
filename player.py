@@ -10,7 +10,7 @@ class Player:
         self.character = character # A string of the name of the character
         self.location = location
         self.cards = cards
-        self.checklist = Checklist(cards)
+        #self.checklist = Checklist(cards)
 
         # Track if the player was moved by suggestion between turns -> will affect options on their turn
         # -> always reset at the end of player's turn

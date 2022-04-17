@@ -9,9 +9,9 @@
 # EN.605.601.81.SP22 (Foundations of Software Engineering)
 # Authors: Tenth Floor Cool Kids Club
 
-# This game is a simplified version of the popular board game, Clue®. 
-# The main simplification is in the navigation of the game board. 
-# In Clue-Less there are the same nine rooms, six weapons, and six people as in the board game. 
+# This game is a simplified version of the popular board game, Clue®.
+# The main simplification is in the navigation of the game board.
+# In Clue-Less there are the same nine rooms, six weapons, and six people as in the board game.
 # The rules are pretty much the same except for moving from room to room.
 
 from http import server
@@ -33,7 +33,7 @@ init() # Invoke console coloring
 
 
 def main(mode = 'initial'):
-    
+
     #subprocess.Popen('python game_driver.py', shell=False)
 
     if(mode == 'initial'):
@@ -59,7 +59,7 @@ def main(mode = 'initial'):
         sch.broadcast(f'User {u[0]} has selected character {selected_character}')
         gi.players[counter].character = selected_character # Assign this character to the player
         counter += 1
-    
+
     gi.initialize_cards()
     gi.generate_game_map()
     gi.initialize_player_locations()
