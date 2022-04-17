@@ -100,9 +100,12 @@ class GameInitializer:
                     continue # That location on the Grid is not a square. It it just null space. Don't create a location.
                 if name in rooms: # Lookup the square name to see if it is a room.
                     location_type = 'room' 
+                    room_name = rooms[name]
+                    Location.locations[name] = Location(name, location_type, room_name = room_name)
                 else:
                     location_type = 'hallway'
-                Location.locations[name] = Location(name, location_type)
+                    room_name = 'hallway' # Generic room name
+                    Location.locations[name] = Location(name, location_type, room_name = room_name)
 
         # Declare the location objects for the six home squares.
         for i in range(6):

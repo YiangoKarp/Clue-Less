@@ -68,7 +68,7 @@ class GameManager:
 
                 # Inform all players of the suggestion
                 suggest_msg = player.username + " is making a suggestion: It was " + \
-                              suggestion_values[0] + " in the " + suggestion_values[2] + "with the " + \
+                              suggestion_values[0] + " in the " + suggestion_values[2] + " with the " + \
                               suggestion_values[1] + "!"
                 self.broadcast(suggest_msg)
 
@@ -154,38 +154,34 @@ class GameManager:
 
     # For the UI, we will have to change this to a pop-up or something
     def get_suggestion_values(self, player):
-        suggest_char_prompt = """Which character committed the crime:
-        Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
+        suggest_char_prompt = 'Which character committed the crime?:' + vi.suspects()
 
         self.message_player(player,suggest_char_prompt)
-        suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
+        suggest_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        suggest_char_choice = self.character_name_list()[suggest_char_choice-1]
 
         # Error handling for incorrect suggestion player input
         while suggest_char_choice not in self.character_name_list():
-            suggest_char_prompt = """Invalid character name entered.
-            Which character committed the crime:
-            Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
+            self.message_player(player, "Invalid character selection.")
+            self.message_player(player,suggest_char_prompt)
 
             self.message_player(player,suggest_char_prompt)
             suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
 
-        suggest_weapon_prompt = """Which weapon was used for the crime:
-        candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
+        suggest_weapon_prompt = 'Which weapon was used for the crime?:' + vi.weapons()
 
         self.message_player(player,suggest_weapon_prompt)
-        suggest_weapon_choice = player.client_id.recv(3000).decode('utf-8')
+        suggest_weapon_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        suggest_weapon_choice = self.weapon_name_list()[suggest_weapon_choice-1]
 
         while suggest_weapon_choice not in self.weapon_name_list():
-            suggest_weapon_prompt = """Invalid weapon name entered.
-            Which weapon was used for the crime:
-            candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
-
+            self.message_player(player, "Invalid weapon name entered.")
             self.message_player(player,suggest_weapon_prompt)
             suggest_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Return the names of the character, weapon, and room (3 strings)
         # Change to returning the cards? Or the names of the first 2 but then the Location object?
-        suggestion_values = [suggest_char_choice, suggest_weapon_choice, player.location.name]
+        suggestion_values = [suggest_char_choice, suggest_weapon_choice, player.location.room_name]
 
         return suggestion_values
 

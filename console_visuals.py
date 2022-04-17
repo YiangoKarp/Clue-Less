@@ -28,6 +28,22 @@ def suspects():
     '''
     return(suspects)
 
+def weapons():
+    '''Print the weapons options'''
+    weapons = '''
+    +----------------------+
+    |       Weapons        |
+    +----------------------+
+    | [1] Candlestick      |
+    | [2] Revolver         |
+    | [3] Dagger           |
+    | [4] Lead Pipe        |
+    | [5] Rope             |
+    | [6] Wrench           |
+    +----------------------+
+    '''
+    return(weapons)
+
 def options():
     '''Print the options for suspect and weapon'''
     options = '''

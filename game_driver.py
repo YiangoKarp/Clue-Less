@@ -58,7 +58,10 @@ def stub_1():
     # Player 1
     client_tx(c1,'1') # Choose to move
     client_tx(c1, 'e1') # Move to E1
-    #client_tx(c1, '2') # End Turn
+    client_tx(c1, '1') # Make Suggestion
+    client_tx(c1, '2') # Suspect option 1
+    client_tx(c1, '1') # Weapon option 1
+
     print_response(c1)
 
     time.sleep(1000000) # Prevents client connections from closing

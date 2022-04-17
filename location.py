@@ -4,8 +4,9 @@ class Location:
 
     locations = {} # This static dictionary will hold all of the location objects on the game map.
 
-    def __init__(self, name, location_type, players_present = []):
-        self.name = name
+    def __init__(self, name, location_type, players_present = [], room_name = None):
+        self.name = name # Name of the square (Ex: A1)
+        self.room_name = room_name # The name of the room (If it is a hallway, just call it 'hallway')
         self.location_type = location_type
         # Default adjacent_locations as empty because we will need to initialize all locations before assigning neighbors
         self.adjacent_locations = []
