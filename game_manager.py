@@ -2,6 +2,7 @@ from card import Card
 from player import Player
 from location import Location
 from turn import Turn
+import console_visuals as vi
 
 
 class GameManager:
@@ -36,6 +37,12 @@ class GameManager:
 
     def run_turn(self, player):
         self.broadcast(f"It is {player.username}'s turn.")
+
+        # At the start of a turn, add the following console visuals:
+        self.message_player(player,vi.game_map()) # Print the static game map
+        self.message_player(player, vi.player_cards(player))# Print a list of the player's cards
+        self.message_player(player, vi.extra_cards(self.extra_cards))# Print the extra cards
+
         turn = Turn(player)
         player_options = turn.generate_player_options(player)
 
@@ -98,14 +105,14 @@ class GameManager:
             options_prompt = options_prompt + option'''
 
         # Send options prompt to user and receive their choice as numeric input
-        player.client_id.send(options_prompt.encode('utf-8'))
+        self.message_player(player, options_prompt)
         player_choice = int(player.client_id.recv(3000).decode('utf-8'))
         player_choice = player_options[player_choice-1]
         # Error handling for incorrect user input
         while player_choice not in player_options:#['1','2','3']: #player_options:
             error_options_prompt = "Invalid choice entered. " + options_prompt
 
-            player.client_id.send(error_options_prompt.encode('utf-8'))
+            self.message_player(player, error_options_prompt)
             player_choice = player.client_id.recv(3000).decode('utf-8')
 
         return player_choice
@@ -117,7 +124,7 @@ class GameManager:
         options_prompt = options_prompt + ', '.join(options)
 
         # Send options prompt to user and receive their choice as numeric input
-        player.client_id.send(options_prompt.encode('utf-8'))
+        self.message_player(player,options_prompt)
         player_choice_name = str(player.client_id.recv(3000).decode('utf-8')).upper()
 
         # Error handling for incorrect user input
@@ -150,7 +157,7 @@ class GameManager:
         suggest_char_prompt = """Which character committed the crime:
         Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
-        player.client_id.send(suggest_char_prompt.encode('utf-8'))
+        self.message_player(player,suggest_char_prompt)
         suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Error handling for incorrect suggestion player input
@@ -159,13 +166,13 @@ class GameManager:
             Which character committed the crime:
             Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
-            player.client_id.send(suggest_char_prompt.encode('utf-8'))
+            self.message_player(player,suggest_char_prompt)
             suggest_char_choice = player.client_id.recv(3000).decode('utf-8')
 
         suggest_weapon_prompt = """Which weapon was used for the crime:
         candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
-        player.client_id.send(suggest_weapon_prompt.encode('utf-8'))
+        self.message_player(player,suggest_weapon_prompt)
         suggest_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
         while suggest_weapon_choice not in self.weapon_name_list():
@@ -173,7 +180,7 @@ class GameManager:
             Which weapon was used for the crime:
             candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
-            player.client_id.send(suggest_weapon_prompt.encode('utf-8'))
+            self.message_player(player,suggest_weapon_prompt)
             suggest_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Return the names of the character, weapon, and room (3 strings)
@@ -213,20 +220,20 @@ class GameManager:
                     for card_name in showable_cards[1:]:
                         card_show_prompt = card_show_prompt + " or " + card_name
 
-                    showing_player.client_id.send(card_show_prompt.encode('utf-8'))
+                    self.message_player(showing_player,card_show_prompt)
                     card_to_show = showing_player.client_id.recv(3000).decode('utf-8')
 
                     # Error handling if player enters incorrect value
                     while card_to_show not in showable_cards:
                         error_card_show_prompt = "That's not a showable card. " + card_show_prompt
 
-                        showing_player.client_id.send(error_card_show_prompt.encode('utf-8'))
+                        self.message_player(showing_player,error_card_show_prompt)
                         card_to_show = showing_player.client_id.recv(3000).decode('utf-8')
 
                 # Finally, show the card to the suggesting player and tell all players a card was shown
                 card_showing_prompt = showing_player.username + " shows you " + card_to_show
 
-                player.client_id.send(card_showing_prompt.encode('utf-8'))
+                self.message_player(player,card_showing_prompt)
 
                 self.broadcast(showing_player.username + " showed a card to " + player.username + "!")
 
@@ -265,7 +272,7 @@ class GameManager:
         accuse_char_prompt = """Which character committed the crime:
         Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
-        player.client_id.send(accuse_char_prompt.encode('utf-8'))
+        self.message_player(player,accuse_char_prompt)
         accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Error handling for incorrect suggestion player input
@@ -274,13 +281,13 @@ class GameManager:
             Which character committed the crime:
             Miss Scarlet, Col. Mustard, Mrs. White, Mr. Green, Mrs. Peacock, or Prof. Plum?"""
 
-            player.client_id.send(accuse_char_prompt.encode('utf-8'))
+            self.message_player(player,accuse_char_prompt)
             accuse_char_choice = player.client_id.recv(3000).decode('utf-8')
 
         accuse_weapon_prompt = """Which weapon was used for the crime:
         candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
-        player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
+        self.message_player(player,accuse_weapon_prompt)
         accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
         while accuse_weapon_choice not in self.weapon_name_list():
@@ -288,13 +295,13 @@ class GameManager:
             Which weapon was used for the crime:
             candlestick, revolver, dagger, lead pipe, rope, or wrench?"""
 
-            player.client_id.send(accuse_weapon_prompt.encode('utf-8'))
+            self.message_player(player,accuse_weapon_prompt)
             accuse_weapon_choice = player.client_id.recv(3000).decode('utf-8')
 
         accuse_location_prompt = """Where did the crime happen:
         Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
 
-        player.client_id.send(accuse_location_prompt.encode('utf-8'))
+        self.message_player(player,accuse_location_prompt)
         accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
 
         while accuse_location_choice not in self.location_name_list():
@@ -302,7 +309,7 @@ class GameManager:
             Where did the crime happen:
             Study, Hall, Lounge, Library, Billiard Room, Dining Room, Conservatory, Ballroom, or Kitchen?"""
 
-            player.client_id.send(accuse_location_prompt.encode('utf-8'))
+            self.message_player(player,accuse_location_prompt)
             accuse_location_choice = player.client_id.recv(3000).decode('utf-8')
 
         # Return the names of the character, weapon, and room (3 strings)
@@ -373,3 +380,8 @@ class GameManager:
         print(f"[Broadcast Message] {msg}")
         for c in self.players:
             c.client_id.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))
+
+    def message_player(self, player, msg):
+        '''Send a specific to a specific player'''
+        #print(f"[Message to {player.username}] {msg}")
+        player.client_id.send(str(msg+'\n').encode('utf-8'))
