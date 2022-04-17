@@ -17,14 +17,14 @@ class Player:
         self.was_suggested = False
         self.eliminated = False
 
-    def __repr__(self):
-        '''Player print() function'''
-        output = f'''
-        Username: {self.username}
-        Client ID: {self.client_id}
-        Character: {self.character}
-        Location: {self.location}
-        Cards: {self.cards}
-        Checklist: {self.checklist}
-        '''
-        return output
+    # def __repr__(self):
+    #     '''Player print() function'''
+    #     output = f'''
+    #     Username: {self.username}
+    #     Client ID: {self.client_id}
+    #     Character: {self.character}
+    #     Location: {self.location}
+    #     Cards: {self.cards}
+    #     Checklist: {self.checklist}
+    #     '''
+    #     return output

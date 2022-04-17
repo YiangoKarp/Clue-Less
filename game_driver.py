@@ -1,8 +1,6 @@
 # This an example of how we can simulate game scenarios. We can programatically run through user I/O.
-
 import time
 import socket
-
 
 def print_response(client):
     print(client.recv(3000).decode('utf-8'))
@@ -14,19 +12,15 @@ def create_client(host = '127.0.0.1'):
     time.sleep(0.25)
     return c
 
-def client_login(client,username):
-    client.send(str(username).encode('utf-8'))
-    time.sleep(0.25)
-    print_response(client)
-
-def select_character(client, character_choice):
-    client.send(str(character_choice).encode('utf-8'))
+def client_tx(client, message):
+    '''Transmit message from client to server'''
+    client.send(str(message).encode('utf-8'))
     time.sleep(0.25)
     print_response(client)
 
 
 def stub_1():
-    '''Simulates a game scenario'''
+    '''Simulate Game Scenario'''
 
     # Open three client applications
     c1 = create_client()
@@ -34,18 +28,47 @@ def stub_1():
     c3 = create_client()
 
     # Each user chooses a username
-    client_login(c1, 'Player1')
-    client_login(c2, 'Player2')
-    client_login(c3, 'Player3')
+    client_tx(c1, 'Player1')
+    client_tx(c2, 'Player2')
+    client_tx(c3, 'Player3')
 
     # Each user selects a character
-    select_character(c1, '1')
-    select_character(c2, '2')
-    select_character(c3, '2')
+    client_tx(c1, '1')
+    client_tx(c2, '2')
+    client_tx(c3, '2')
 
+    # Player 1
+    client_tx(c1,'1') # Choose to move
+    client_tx(c1, 'd1') # Move to D1
+    client_tx(c1, '2') # End Turn
+    #print_response(c1)
+
+    #Player 2
+    client_tx(c2, '1') # Choose to move
+    client_tx(c2, 'd5') # Move to D5
+    client_tx(c2, '2') # End Turn
+    #print_response(c2)
+
+    #Player 3
+    client_tx(c3, '1') # Choose to move
+    client_tx(c3, 'B5') # Move to B5
+    client_tx(c3, '2') # End Turn
+    #print_response(c3)
+
+    # Player 1
+    client_tx(c1,'1') # Choose to move
+    client_tx(c1, 'e1') # Move to E1
+    #client_tx(c1, '2') # End Turn
     print_response(c1)
 
     time.sleep(1000000) # Prevents client connections from closing
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     stub_1()

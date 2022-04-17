@@ -35,6 +35,7 @@ class GameManager:
             self.game_over = True
 
     def run_turn(self, player):
+        self.broadcast(f"It is {player.username}'s turn.")
         turn = Turn(player)
         player_options = turn.generate_player_options(player)
 
@@ -53,6 +54,7 @@ class GameManager:
                 player_move_choice = self.receive_player_move_choice(player, player_move_options)
                 # Move the player
                 self.move_player(player, player_move_choice)
+                turn.moved = True # Player has moved their location this turn. They can't move locations again until the next turn.
             if player_choice == "Suggest":
                 # Get string names of character, weapon, and room for suggestion, in that order
                 suggestion_values = self.get_suggestion_values(player)
@@ -97,8 +99,8 @@ class GameManager:
 
         # Send options prompt to user and receive their choice as numeric input
         player.client_id.send(options_prompt.encode('utf-8'))
-        player_choice = player.client_id.recv(3000).decode('utf-8')
-
+        player_choice = int(player.client_id.recv(3000).decode('utf-8'))
+        player_choice = player_options[player_choice-1]
         # Error handling for incorrect user input
         while player_choice not in player_options:#['1','2','3']: #player_options:
             error_options_prompt = "Invalid choice entered. " + options_prompt
@@ -110,23 +112,19 @@ class GameManager:
 
     def receive_player_move_choice(self, player, move_options):
         # move_options will be a list of Location objects (length at least 1, up to 4)
-        options_prompt = "Where would you like to move?: " + move_options.name[0]
-
-        for option in move_options[1:]:
-            options_prompt = options_prompt + option.name
+        options_prompt = f"Your current location is {player.location.name}. Where would you like to move? Your options are: "
+        options = [o.name for o in move_options]      
+        options_prompt = options_prompt + ', '.join(options)
 
         # Send options prompt to user and receive their choice as numeric input
         player.client_id.send(options_prompt.encode('utf-8'))
-        player_choice_name = player.client_id.recv(3000).decode('utf-8')
+        player_choice_name = str(player.client_id.recv(3000).decode('utf-8')).upper()
 
         # Error handling for incorrect user input
+        # ...
 
         # Find the Location object with the name selected by the player
-        player_choice = move_options[0]
-        i = 0
-        while player_choice_name != player_choice.name:
-            i = i + 1
-            player_choice = move_options[i]
+        player_choice = list(filter(lambda option: option.name == player_choice_name, move_options))[0]
 
         return player_choice # Return the location object
 
@@ -134,7 +132,8 @@ class GameManager:
         # Update values of Location object for player's current location
         player.location.players_present.remove(player)
         if player.location.max_players > len(player.location.players_present):
-            player.location.movable = True
+            if player.location.name[0] != 'H':
+                player.location.moveable = True # Mark players previous location as moveable (Unless it was a home square)
 
         # Update player's location
         player.location = new_location
@@ -142,7 +141,7 @@ class GameManager:
         # Update values of Location object for player's new location
         player.location.players_present.append(player)
         if player.location.max_players <= len(player.location.players_present):
-            player.location.movable = False
+            player.location.moveable = False
 
         self.broadcast(player.username + " moved to " + new_location.name)
 
@@ -373,4 +372,4 @@ class GameManager:
         '''Send a message to all clients'''
         print(f"[Broadcast Message] {msg}")
         for c in self.players:
-            c.client.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))
+            c.client_id.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))

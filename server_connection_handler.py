@@ -12,7 +12,7 @@ from colorama import Fore, Back, Style
 
 class ServerConnectionHandler():
     def __init__(self):
-        self.n_players = int(input('How many players are there?: '))
+        self.n_players = 3#int(input('How many players are there?: '))
         self.n_bots = 0#2#int(input('How many bots to add?: '))
         self.clients = [] # Connection string of players that joined
         self.users = {} # Usernames of players that joined
@@ -54,10 +54,9 @@ class ServerConnectionHandler():
         for c in self.clients:
             c.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))
 
-    def message_user(self, username, msg):
-        c = self.users[username]
-        c.send(f"[Message to {username}] {msg}".encode('utf-8'))
-        print(f"[Message to {username}] {msg}")
+    def message_client(client, msg):
+        '''Send a message to a specific client'''
+        client.send(msg.encode('utf-8')) # Message user
 
     def muster_clients(self):
         '''Server will accept incoming requests for clients to join until it reaches the number of players.'''

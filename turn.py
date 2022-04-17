@@ -33,9 +33,9 @@ class Turn:
         return options
 
     def generate_player_move_options(self, player):
-        # Get locations adjacent to player's current location
+        '''Return a list of Locations adjacent to the player's current location'''
         moves = player.location.adjacent_locations
         for move in moves:
-            if not move.movable:
+            if not move.moveable:
                 moves.remove(move)
         return moves

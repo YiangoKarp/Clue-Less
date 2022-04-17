@@ -34,7 +34,7 @@ class GameInitializer:
         random.shuffle(self.suspect_cards) # Shuffle suspect cards
         random.shuffle(self.weapon_cards) # Shuffle weapon cards
         random.shuffle(self.room_cards) # Shuffle room cards
-        random.shuffle(self.players) # Shuffle the players list
+        #random.shuffle(self.players) # Shuffle the players list
 
         # Build the case file envelope
         self.case_file_cards = [self.suspect_cards[0], self.weapon_cards[0], self.room_cards[0]]
@@ -76,6 +76,7 @@ class GameInitializer:
         '''Place players on their home squares'''
         for p in self.players:
             p.location = Location.locations[home_locations[p.character]] # Retrieve the Home Square Location object associated to the selected character.
+            p.location.players_present = [p] # Mark player as present in the home square
 
     def generate_game_map(self):
         '''Generate a dictionary of the game map. The game map
@@ -108,6 +109,7 @@ class GameInitializer:
             name = 'H'+str(i+1)
             location_type = 'home'
             Location.locations[name] = Location(name, location_type)
+            Location.locations[name].moveable = False # Players can't move into any home squares, only out of them.
 
         # Hardcoded Adjacency Map
         adjacencies = {'A1': ['B1','A2','E5'],
@@ -145,3 +147,5 @@ class GameInitializer:
             for n in neighbors:
                 loc_neighbor = Location.locations[n] # Get the Location object of the neighbor
                 Location.locations[key].add_neighbors(loc_neighbor) # Add the neighbor to the Location object
+
+        
