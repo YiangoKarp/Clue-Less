@@ -23,6 +23,7 @@ import sys
 from tqdm import tqdm
 from colorama import init
 from colorama import Fore, Back, Style
+import subprocess
 
 from server_connection_handler import ServerConnectionHandler
 from game_initializer import GameInitializer
@@ -32,6 +33,8 @@ init() # Invoke console coloring
 
 
 def main(mode = 'initial'):
+    
+    #subprocess.Popen('python game_driver.py', shell=False)
 
     if(mode == 'initial'):
         # Create the Server Connection Handler for the initial game.
@@ -41,7 +44,7 @@ def main(mode = 'initial'):
     if(mode in ['initial', 'kicked']):
         # Wait for clients to connect
         sch.muster_clients()
-        sch.broadcast(Fore.GREEN + 'All players have joined. Starting game!' + Style.RESET_ALL)
+        sch.broadcast(Fore.GREEN + 'All players have joined.' + Style.RESET_ALL)
         sch.broadcast(vi.game_logo())
 
     available_characters = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -72,7 +75,7 @@ def main(mode = 'initial'):
 
     # Show untaken cards to all players and update checklists
 
-
+    sch.broadcast("Starting Game!")
     # Initialize GameManager
     gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
 
