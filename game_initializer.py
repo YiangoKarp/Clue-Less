@@ -34,6 +34,7 @@ class GameInitializer:
         random.shuffle(self.suspect_cards) # Shuffle suspect cards
         random.shuffle(self.weapon_cards) # Shuffle weapon cards
         random.shuffle(self.room_cards) # Shuffle room cards
+        random.shuffle(self.players) # Shuffle the players list
 
         # Build the case file envelope
         self.case_file_cards = [self.suspect_cards[0], self.weapon_cards[0], self.room_cards[0]]

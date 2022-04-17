@@ -33,8 +33,8 @@ init() # Invoke console coloring
 
 
 def main(mode = 'initial'):
-    
-    #subprocess.Popen('python game_driver.py', shell=False)
+
+    subprocess.Popen('python game_driver.py', shell=False)
 
     if(mode == 'initial'):
         # Create the Server Connection Handler for the initial game.
@@ -63,17 +63,6 @@ def main(mode = 'initial'):
     gi.initialize_cards()
     gi.generate_game_map()
     gi.initialize_player_locations()
-
-    # Randomize player turn order (add method to GameInitializer?)
-
-
-    # Initialize Room objects (add method to GameInitializer?)
-
-
-    # Assign adjacent_rooms to Room objects (add method to GameInitializer?)
-
-
-    # Show untaken cards to all players and update checklists
 
     sch.broadcast("Starting Game!")
     # Initialize GameManager
