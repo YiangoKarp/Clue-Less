@@ -120,7 +120,7 @@ class GameManager:
     def receive_player_move_choice(self, player, move_options):
         # move_options will be a list of Location objects (length at least 1, up to 4)
         options_prompt = f"Your current location is {player.location.name}. Where would you like to move? Your options are: "
-        options = [o.name for o in move_options]      
+        options = [o.name for o in move_options]
         options_prompt = options_prompt + ', '.join(options)
 
         # Send options prompt to user and receive their choice as numeric input
@@ -190,7 +190,7 @@ class GameManager:
         request_ind = 0
         card_to_show = None
 
-        while card_to_show is None & request_ind < len(players_to_request):
+        while card_to_show is None and request_ind < len(players_to_request):
             showing_player = players_to_request[request_ind]
             showable_cards = []
 
@@ -204,6 +204,7 @@ class GameManager:
                 # If 0 showable cards, message all players and move to next player
                 suggest_msg = showing_player.username + " was unable to show a card!"
                 self.broadcast(suggest_msg)
+                request_ind = request_ind + 1
             else:
                 # If 1 showable card, that's the card. Otherwise, prompt for card selection
                 if len(showable_cards) == 1:
