@@ -4,18 +4,18 @@ import socket
 
 def print_response(client):
     print(client.recv(3000).decode('utf-8'))
-    time.sleep(0.5)
+    time.sleep(0.25)
 
 def create_client(host = '127.0.0.1'):
     c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     c.connect((host,8080))
-    time.sleep(0.5)
+    time.sleep(0.25)
     return c
 
 def client_tx(client, message):
     '''Transmit message from client to server'''
     client.send(str(message).encode('utf-8'))
-    time.sleep(0.5)
+    time.sleep(0.25)
     print_response(client)
 
 
@@ -50,20 +50,66 @@ def stub_1():
     #print_response(c2)
 
     #Player 3
-    client_tx(c3, '1') # Choose to move
-    client_tx(c3, 'B5') # Move to B5
-    client_tx(c3, '2') # End Turn
+    client_tx(c3, '3') # End Turn
     #print_response(c3)
 
-    # # Player 1
-    # client_tx(c1,'1') # Choose to move
-    # client_tx(c1, 'e1') # Move to E1
-    # client_tx(c1, '1') # Make Suggestion
-    # client_tx(c1, '2') # Suspect option 2
-    # client_tx(c1, '1') # Weapon option 1
+    # Player 1
+    client_tx(c1, '1')  # Choose to move
+    client_tx(c1, 'e1')  # Move to D1
+    client_tx(c1, '3')  # End Turn
+    # print_response(c1)
+
+    # Player 2
+    client_tx(c2, '1')  # Choose to move
+    client_tx(c2, 'e5')  # Move to D5
+    client_tx(c2, '3')  # End Turn
+    # print_response(c2)
+
+    # Player 3
+    client_tx(c3, '3')  # End Turn
+    # print_response(c3)
 
     # Player 1
+    client_tx(c1, '1')  # Choose to move
+    client_tx(c1, 'e2')  # Move to D1
+    client_tx(c1, '2')  # End Turn
+    # print_response(c1)
 
+    # Player 2
+    client_tx(c2, '1')  # Choose to move
+    client_tx(c2, 'e4')  # Move to D5
+    client_tx(c2, '2')  # End Turn
+    # print_response(c2)
+
+    # Player 3
+    client_tx(c3, '3')  # End Turn
+    # print_response(c3)
+
+    # Player 1
+    client_tx(c1, '3')  # End Turn
+    # print_response(c1)
+
+    # Player 2
+    client_tx(c2, '1')  # Choose to move
+    client_tx(c2, 'e3')  # Move to D5
+    client_tx(c2, '3')  # End Turn
+    # print_response(c2)
+
+    # Player 3
+    client_tx(c3, '3')  # End Turn
+    # print_response(c3)
+
+    # Player 1
+    client_tx(c1, '3')  # End Turn
+    # print_response(c1)
+
+    # Player 2
+    client_tx(c2, '1')  # Choose to move
+    print_response(c2)
+
+    time.sleep(1000000)  # Prevents client connections from closing
+    # Player 1
+'''
     client_tx(c1, '2') # Make Accusation
     client_tx(c1, '2') # Suspect option 2
     client_tx(c1, '2') # Weapon option 2
@@ -77,8 +123,8 @@ def stub_1():
     #print_response(c2)
     client_tx(c3, '2') # Choose to play again
     #print_response(c3)
+'''
 
-    time.sleep(1000000) # Prevents client connections from closing
 
 
 

@@ -81,6 +81,7 @@ class GameManager:
                 # If the player exists, move them
                 if player_to_move is not None:
                     self.move_player(player_to_move, player.location)
+                    player_to_move.was_suggested = True # To help determine game options next turn
 
                 # Run the suggestion
                 self.make_suggestion(player, suggestion_values)
@@ -91,6 +92,8 @@ class GameManager:
             player_options = turn.generate_player_options(player)
 
             player_choice = self.receive_player_choice(player, player_options)
+
+        player.was_suggested = False # Reset in case they started out suggested
 
         # Return player choice because it could end on End Turn or Accuse
         # GameManager will act differently, depending on the result of the turn
