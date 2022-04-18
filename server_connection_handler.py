@@ -107,7 +107,7 @@ class ServerConnectionHandler():
             client.send('Would you like to play again?\n [1] Yes [2] No'.encode('utf-8'))
             selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
             if selection == 1:
-                play_again_tally+=1
+                play_again_tally += 1
 
         vote = play_again_tally/len(self.clients)
         if vote > 0.5:

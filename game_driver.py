@@ -4,18 +4,18 @@ import socket
 
 def print_response(client):
     print(client.recv(3000).decode('utf-8'))
-    time.sleep(0.25)
+    time.sleep(0.5)
 
 def create_client(host = '127.0.0.1'):
     c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     c.connect((host,8080))
-    time.sleep(0.25)
+    time.sleep(0.5)
     return c
 
 def client_tx(client, message):
     '''Transmit message from client to server'''
     client.send(str(message).encode('utf-8'))
-    time.sleep(0.25)
+    time.sleep(0.5)
     print_response(client)
 
 
@@ -38,7 +38,7 @@ def stub_1():
     client_tx(c3, '2')
 
     # Player 1
-    client_tx(c1,'1') # Choose to move
+    client_tx(c1, '1') # Choose to move
     client_tx(c1, 'd1') # Move to D1
     client_tx(c1, '2') # End Turn
     #print_response(c1)
@@ -69,8 +69,14 @@ def stub_1():
     client_tx(c1, '2') # Weapon option 2
     client_tx(c1, '2') # Room option 2
 
+    #print_response(c1)
 
-    print_response(c1)
+    client_tx(c1, '2') # Choose to play again
+    #print_response(c1)
+    client_tx(c2, '2') # Choose to play again
+    #print_response(c2)
+    client_tx(c3, '2') # Choose to play again
+    #print_response(c3)
 
     time.sleep(1000000) # Prevents client connections from closing
 

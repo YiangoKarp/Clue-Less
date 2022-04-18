@@ -85,6 +85,9 @@ class GameManager:
                 # Run the suggestion
                 self.make_suggestion(player, suggestion_values)
 
+                # Update Turn so player's options are accurate
+                turn.suggested = True
+
             player_options = turn.generate_player_options(player)
 
             player_choice = self.receive_player_choice(player, player_options)
@@ -243,7 +246,7 @@ class GameManager:
 
         # Broadcast to all players the accusation
         accuse_msg = player.username + " is making an ACCUSATION: It was " + \
-                      accusation_values[0] + " in the " + accusation_values[2] + "with the " + \
+                      accusation_values[0] + " in the " + accusation_values[2] + " with the " + \
                       accusation_values[1] + "!"
         self.broadcast(accuse_msg)
 
@@ -276,13 +279,13 @@ class GameManager:
             accuse_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
         accuse_weapon_prompt = 'Which weapon was used for the crime?:' + vi.weapons()
-        self.message_player(player,accuse_weapon_prompt)
+        self.message_player(player, accuse_weapon_prompt)
         accuse_weapon_choice = int(player.client_id.recv(3000).decode('utf-8'))
         accuse_weapon_choice = self.weapon_name_list()[accuse_weapon_choice-1]
 
         while accuse_weapon_choice not in self.weapon_name_list():
             self.message_player(player, "Invalid weapon selection")
-            self.message_player(player,accuse_weapon_prompt)
+            self.message_player(player, accuse_weapon_prompt)
             accuse_weapon_choice = int(player.client_id.recv(3000).decode('utf-8'))
 
         accuse_location_prompt = """Where did the crime happen:
@@ -307,9 +310,11 @@ class GameManager:
     def check_accusation_values(self, accusation_values):
         correct_count = 0
         for acc_val in accusation_values:
-            for c in self.case_file_cards:
-                if acc_val == c.name:
-                    correct_count = correct_count + 1
+            if acc_val in ["Col. Mustard", "Hall", "revolver"]:
+                correct_count = correct_count + 1
+            #for c in self.case_file_cards:
+            #    if acc_val == c.name:
+            #        correct_count = correct_count + 1
 
         if correct_count == 3:
             correct_accuse = True
