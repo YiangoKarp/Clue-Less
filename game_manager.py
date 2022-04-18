@@ -43,6 +43,12 @@ class GameManager:
         self.message_player(player, vi.player_cards(player))# Print a list of the player's cards
         self.message_player(player, vi.extra_cards(self.extra_cards))# Print the extra cards
 
+        your_cards = [c.name for c in player.cards]
+        your_cards = ', '.join(your_cards)
+        self.message_player(player, f"Your cards: {your_cards}")
+        your_location = f'Your location: {player.location.name}'
+        self.message_player(player, your_location)
+
         turn = Turn(player)
         player_options = turn.generate_player_options(player)
 
@@ -355,7 +361,7 @@ class GameManager:
         return ["Miss Scarlet", "Col. Mustard", "Mrs. White", "Mr. Green", "Mrs. Peacock", "Prof. Plum"]
 
     def weapon_name_list(self):
-        return ["candlestick", "revolver", "dagger", "lead pipe", "rope", "wrench"]
+        return ["Candlestick", "Revolver", "Dagger", "Lead Pipe", "Rope", "Wrench"]
 
     def room_name_list(self):
         return ["Study", "Hall", "Lounge", "Library", "Billiard Room", "Dining Room", "Conservatory",
