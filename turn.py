@@ -9,7 +9,6 @@ class Turn:
         self.player = player
         self.moved = False
         self.suggested = False
-        self.accused = False  # might be unnecessary
 
     def generate_player_options(self, player):
         options = []

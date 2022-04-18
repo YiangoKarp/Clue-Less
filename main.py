@@ -36,7 +36,7 @@ def main(mode = 'initial'):
 
     subprocess.Popen('python game_driver.py', shell=False)
 
-    if(mode == 'initial'):
+    if(mode in ['initial', 'restart']):
         # Create the Server Connection Handler for the initial game.
         global sch
         sch = ServerConnectionHandler()
