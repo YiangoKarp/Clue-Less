@@ -34,7 +34,7 @@ init() # Invoke console coloring
 
 def main(mode = 'initial'):
 
-    subprocess.Popen('python game_driver.py', shell=False)
+    #subprocess.Popen('python game_driver.py', shell=False)
 
     if(mode == 'initial'):
         # Create the Server Connection Handler for the initial game.
