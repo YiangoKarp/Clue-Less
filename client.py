@@ -78,6 +78,8 @@ class Client(QThread):
                             characterOptions = msg.strip("][").replace("'", "").split(', ')
                             # print("Processed options: ", characterOptions)
                             self.s_assignCharacter.emit(characterOptions)
+                        elif "Starting Game!":
+                            print("Starting Game!")
                         else:
                             print(msg)
                 else:

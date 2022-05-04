@@ -65,7 +65,7 @@ class ServerConnectionHandler():
             client, ip = self.server.accept()
             self.clients.append(client) # Add client to roster
             username = self.assign_username(client) # Prompt client for their username
-            self.broadcast(Fore.BLUE + f'{username} has joined the game!' + Style.RESET_ALL)
+            # self.broadcast(Fore.BLUE + f'{username} has joined the game!' + Style.RESET_ALL)
             pbar.update(1)
         pbar.close()
 
@@ -77,7 +77,7 @@ class ServerConnectionHandler():
         # TODO implement username validation and checking for duplicates
 
         self.users[username] = client # Save the username to client association
-        client.send(f'Welcome, {username}!\n'.encode('utf-8'))
+        # client.send(f'Welcome, {username}!\n'.encode('utf-8'))
         return username
 
     def choose_character(self, client: socket.socket, available_characters: list):
@@ -88,7 +88,7 @@ class ServerConnectionHandler():
         selection = int(client.recv(3000).decode('utf-8')) # Get the players selection number
         selected_character = available_characters[selection-1]
         available_characters.remove(selected_character) # Player has chosen character, remove it from list
-        client.send(f'You have selected {selected_character}!\n'.encode('utf-8'))
+        #client.send(f'You have selected {selected_character}!\n'.encode('utf-8'))
 
         return selected_character
 

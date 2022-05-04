@@ -118,6 +118,7 @@ class MainWindow(QMainWindow):
         global _PlayerName
         _PlayerName = self.ui.Entry_2.text()
         self.gameClient.tx_server(_PlayerName)
+        self.ui.Widget_GamePlay_Waiting.setVisible(True)
 
     def startGame(self):
         self.ui.Widget_GameInit.setVisible(False)
