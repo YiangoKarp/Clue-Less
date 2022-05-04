@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         self.ui.Widget_GamePlay.setVisible(False)
         self.ui.Widget_GamePlay_Actions.setVisible(False)
         self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
+        self.ui.Widget_GamePlay_Waiting.setVisible(False)
         #endregion GUI styling
         #region GUI action binding
         self.ui.Btn_JoinServer.clicked.connect(self.joinServer)
@@ -121,10 +122,12 @@ class MainWindow(QMainWindow):
     def startGame(self):
         self.ui.Widget_GameInit.setVisible(False)
         self.ui.Widget_GamePlay.setVisible(True)
+        self.ui.Widget_GamePlay_Waiting.setVisible(True)
         print("StartGame")
 
     def pickCharacter(self, characterOptions: list):
         self.ui.PickCharacter_comboBox.addItems(characterOptions)
+        self.ui.Widget_GamePlay_Waiting.setVisible(False)
         self.ui.Widget_GamePlay_PickCharacter.setVisible(True)
         self.ui.PickCharacter_ConfirmBtn.clicked.connect(self.confirmPickedCharacter)
         print("options: ", characterOptions)
@@ -134,9 +137,8 @@ class MainWindow(QMainWindow):
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
         else:
             selection = QComboBox(self.ui.PickCharacter_comboBox).currentIndex() + 1
-            self.gameClient.tx_server(selection)
+            self.gameClient.tx_server(str(selection))
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
-        
         
 
 app = QApplication(sys.argv)
