@@ -136,7 +136,8 @@ class MainWindow(QMainWindow):
         if isCanceled:
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
         else:
-            selection = QComboBox(self.ui.PickCharacter_comboBox).currentIndex() + 1
+            selection = self.ui.PickCharacter_comboBox.currentIndex() + 1
+            print("Selected Index: ", self.ui.PickCharacter_comboBox.currentIndex())
             self.gameClient.tx_server(str(selection))
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
         
