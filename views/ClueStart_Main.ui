@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,36 +18,56 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>640</width>
-    <height>480</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>640</width>
-    <height>480</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="baseSize">
    <size>
-    <width>640</width>
-    <height>480</height>
+    <width>800</width>
+    <height>600</height>
    </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>SeguoUI</family>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Clue-Less Game Client</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #3B3B3B; color: #FFFFFF; font-family: Calibri;</string>
+   <string notr="true">background-color: #3B3B3B; color: #FFFFFF; font-family: SeguoUI;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>800</width>
+     <height>600</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>800</width>
+     <height>600</height>
+    </size>
+   </property>
    <widget class="QWidget" name="Widget_GameInit" native="true">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
-      <height>481</height>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -64,8 +84,8 @@
       <rect>
        <x>0</x>
        <y>197</y>
-       <width>640</width>
-       <height>281</height>
+       <width>800</width>
+       <height>401</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -76,7 +96,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>640</width>
+       <width>800</width>
        <height>281</height>
       </size>
      </property>
@@ -86,19 +106,22 @@
        <height>281</height>
       </size>
      </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 16pt;</string>
+     </property>
      <widget class="QPushButton" name="Btn_ConfirmPlayer">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>170</y>
+        <x>200</x>
+        <y>250</y>
         <width>421</width>
         <height>41</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -114,8 +137,8 @@
      <widget class="QLineEdit" name="Entry_2">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>58</y>
+        <x>200</x>
+        <y>138</y>
         <width>421</width>
         <height>35</height>
        </rect>
@@ -129,7 +152,7 @@
       <property name="font">
        <font>
         <family>Monospac821 BT</family>
-        <pointsize>18</pointsize>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -139,14 +162,14 @@
      <widget class="QLabel" name="Label_JoinErrorMsg_2">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>100</y>
+        <x>200</x>
+        <y>180</y>
         <width>421</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: Red;</string>
+       <string notr="true">color: Red; font-size: 9pt;</string>
       </property>
       <property name="text">
        <string/>
@@ -164,16 +187,16 @@
      <widget class="QLabel" name="EntryLabel_2">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>10</y>
+        <x>200</x>
+        <y>90</y>
         <width>145</width>
         <height>29</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -192,8 +215,8 @@
       <rect>
        <x>0</x>
        <y>197</y>
-       <width>640</width>
-       <height>281</height>
+       <width>800</width>
+       <height>401</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -204,32 +227,35 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>640</width>
+       <width>800</width>
        <height>281</height>
       </size>
      </property>
      <property name="baseSize">
       <size>
-       <width>640</width>
+       <width>800</width>
        <height>281</height>
       </size>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 16pt;</string>
+     </property>
      <widget class="QPushButton" name="Btn_JoinServer">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>170</y>
+        <x>200</x>
+        <y>250</y>
         <width>421</width>
         <height>41</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -245,8 +271,8 @@
      <widget class="QLineEdit" name="Entry">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>58</y>
+        <x>200</x>
+        <y>138</y>
         <width>421</width>
         <height>35</height>
        </rect>
@@ -260,7 +286,7 @@
       <property name="font">
        <font>
         <family>Monospac821 BT</family>
-        <pointsize>18</pointsize>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -273,14 +299,14 @@
      <widget class="QLabel" name="Label_JoinErrorMsg">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>100</y>
+        <x>200</x>
+        <y>180</y>
         <width>421</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: Red;</string>
+       <string notr="true">color: Red; font-size: 9pt;</string>
       </property>
       <property name="text">
        <string/>
@@ -298,16 +324,16 @@
      <widget class="QLabel" name="EntryLabel">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>10</y>
+        <x>200</x>
+        <y>90</y>
         <width>145</width>
         <height>29</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -326,7 +352,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>640</width>
+       <width>800</width>
        <height>191</height>
       </rect>
      </property>
@@ -338,13 +364,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>640</width>
+       <width>800</width>
        <height>191</height>
       </size>
      </property>
      <property name="baseSize">
       <size>
-       <width>640</width>
+       <width>800</width>
        <height>191</height>
       </size>
      </property>
@@ -357,7 +383,7 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>150</x>
         <y>50</y>
         <width>531</width>
         <height>101</height>
@@ -377,6 +403,9 @@
       </property>
      </widget>
     </widget>
+    <zorder>Widget_JoinServer</zorder>
+    <zorder>frame</zorder>
+    <zorder>Widget_ConfirmPlayer</zorder>
    </widget>
    <widget class="QWidget" name="Widget_GamePlay" native="true">
     <property name="enabled">
@@ -386,8 +415,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
-      <height>481</height>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -399,29 +428,13 @@
     <property name="styleSheet">
      <string notr="true"/>
     </property>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QFrame" name="GamePlay_MapFrame">
      <property name="geometry">
       <rect>
-       <x>420</x>
-       <y>20</y>
-       <width>201</width>
-       <height>441</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background: #B1B1B1; font-size: 16pt; </string>
-     </property>
-     <property name="placeholderText">
-      <string>(obtained clues)</string>
-     </property>
-    </widget>
-    <widget class="QFrame" name="frame_3">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>20</y>
-       <width>320</width>
-       <height>320</height>
+       <x>250</x>
+       <y>10</y>
+       <width>324</width>
+       <height>324</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -433,11 +446,11 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="GamePlay_Map">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
+        <x>2</x>
+        <y>2</y>
         <width>320</width>
         <height>320</height>
        </rect>
@@ -456,41 +469,501 @@
       </property>
      </widget>
     </widget>
-    <widget class="QFrame" name="frame_4">
+    <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>350</y>
-       <width>381</width>
-       <height>111</height>
+       <x>10</x>
+       <y>10</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Your Player:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="GamePlay_PlayerCharacter">
+     <property name="geometry">
+      <rect>
+       <x>115</x>
+       <y>10</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Your Cards:</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="GamePlay_PlayerCards">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>83</y>
+       <width>221</width>
+       <height>251</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: White</string>
+      <string notr="true">background: #626262; font-size: 14pt;</string>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>340</y>
+       <width>151</width>
+       <height>31</height>
+      </rect>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
      </property>
-     <widget class="QLabel" name="label_4">
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Server Message:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="GamePlay_Action_Suggest">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>550</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: #626262; font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Suggest</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="GamePlay_Action_Accuse">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>550</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: #cf2c2b; font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Accuse</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>340</y>
+       <width>221</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="GamePlay_NavUp">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #626262;</string>
+        </property>
+        <property name="text">
+         <string>Up</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="GamePlay_NavTrapDoor">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #626262;</string>
+        </property>
+        <property name="text">
+         <string>TrapDoor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="GamePlay_NavRight">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #626262;</string>
+        </property>
+        <property name="text">
+         <string>Right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QPushButton" name="GamePlay_NavDown">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #626262;</string>
+        </property>
+        <property name="text">
+         <string>Down</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="GamePlay_NavLeft">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>62</width>
+          <height>62</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #626262;</string>
+        </property>
+        <property name="text">
+         <string>Left</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPushButton" name="GamePlay_Action_EndTurn">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>550</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>SeguoUI</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: #626262; font-size: 14pt;;</string>
+     </property>
+     <property name="text">
+      <string>End Turn</string>
+     </property>
+    </widget>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>380</y>
+       <width>221</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>160</x>
-        <y>50</y>
-        <width>62</width>
-        <height>19</height>
+        <x>0</x>
+        <y>0</y>
+        <width>219</width>
+        <height>209</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true">color: Black</string>
-      </property>
-      <property name="text">
-       <string>Actions</string>
-      </property>
+      <widget class="QLabel" name="GamePlay_ServerBM">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>221</width>
+         <height>211</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background: #626262; font-size: 10pt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </widget>
+    <widget class="QScrollArea" name="scrollArea_2">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>50</y>
+       <width>201</width>
+       <height>541</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>199</width>
+        <height>539</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="GamePlay_ObtainedClues">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>201</width>
+         <height>541</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background: #626262; font-size: 10pt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>10</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14pt;</string>
+     </property>
+     <property name="text">
+      <string>Obtained Clues</string>
+     </property>
+    </widget>
+    <zorder>GamePlay_MapFrame</zorder>
+    <zorder>label_3</zorder>
+    <zorder>GamePlay_PlayerCharacter</zorder>
+    <zorder>label_5</zorder>
+    <zorder>GamePlay_PlayerCards</zorder>
+    <zorder>label_6</zorder>
+    <zorder>gridLayoutWidget</zorder>
+    <zorder>scrollArea</zorder>
+    <zorder>scrollArea_2</zorder>
+    <zorder>label</zorder>
+    <zorder>GamePlay_Action_EndTurn</zorder>
+    <zorder>GamePlay_Action_Suggest</zorder>
+    <zorder>GamePlay_Action_Accuse</zorder>
    </widget>
    <widget class="QWidget" name="Widget_GamePlay_Actions" native="true">
     <property name="enabled">
@@ -500,8 +973,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
-      <height>481</height>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -516,8 +989,8 @@
     <widget class="QFrame" name="Actions_Frame">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>60</y>
+       <x>250</x>
+       <y>100</y>
        <width>321</width>
        <height>381</height>
       </rect>
@@ -542,8 +1015,7 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
        </font>
       </property>
       <property name="styleSheet">
@@ -577,8 +1049,7 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
        </font>
       </property>
       <property name="text">
@@ -609,8 +1080,7 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
        </font>
       </property>
       <property name="styleSheet">
@@ -643,8 +1113,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
-      <height>481</height>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -659,14 +1129,14 @@
     <widget class="QFrame" name="PickCharacter_Frame">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>60</y>
+       <x>250</x>
+       <y>100</y>
        <width>321</width>
        <height>381</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: #3B3B3B;</string>
+      <string notr="true">background: #3B3B3B; font-size: 16pt;</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -685,8 +1155,8 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -707,8 +1177,8 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="text">
@@ -738,8 +1208,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
-      <height>481</height>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -749,13 +1219,13 @@
      </sizepolicy>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: #90000000</string>
+     <string notr="true">background: #90000000; </string>
     </property>
     <widget class="QFrame" name="Waiting_Frame">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>170</y>
+       <x>250</x>
+       <y>240</y>
        <width>321</width>
        <height>111</height>
       </rect>
@@ -780,9 +1250,12 @@
       </property>
       <property name="font">
        <font>
-        <family>Calibri</family>
-        <pointsize>18</pointsize>
+        <family>SeguoUI</family>
+        <pointsize>16</pointsize>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 16pt;</string>
       </property>
       <property name="text">
        <string>Waiting for player...</string>
@@ -793,12 +1266,6 @@
      </widget>
     </widget>
    </widget>
-   <zorder>Widget_GameInit</zorder>
-   <zorder>Widget_GamePlay</zorder>
-   <zorder>Widget_GamePlay_Actions</zorder>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>Widget_GamePlay_PickCharacter</zorder>
-   <zorder>Widget_GamePlay_Waiting</zorder>
   </widget>
  </widget>
  <resources/>

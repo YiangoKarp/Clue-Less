@@ -9,7 +9,7 @@ import random
 
 # Hardcoded game cards
 suspects = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
-weapons = ['Candlestick', 'Revolver', 'Dagger', 'Lead Pipe', 'Rope',' Wrench']
+weapons = ['Candlestick', 'Revolver', 'Dagger', 'Lead Pipe', 'Rope','Wrench']
 rooms = ['Study', 'Hall', 'Lounge', 'Library', 'Billiard Room', 'Dining Room', 'Conservatory', 'Ballroom', 'Kitchen']
 
 # Hardcoded home square assignments

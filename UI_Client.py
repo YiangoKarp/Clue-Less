@@ -11,13 +11,18 @@ import threading
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
 from client import Client
+
+from utils import Converters, Append
 
 #region global variables
 _IsGameSessionJoined = False
 _ServerAddress = ""
 _PlayerName = ""
+_PlayerCharacter = ""
+_PlayerCards = []
 #endregion global variables
 
 class MainWindow(QMainWindow):
@@ -27,6 +32,9 @@ class MainWindow(QMainWindow):
     s_playerName = pyqtSignal()
     s_startGame = pyqtSignal()
     s_assignCharacter = pyqtSignal(list)
+    s_serverBroadCast = pyqtSignal(str)
+    s_assignCards = pyqtSignal(list)
+    s_moveOptions = pyqtSignal(list)
     #endregion binding pyqtSignal
 
     def __init__(self):
@@ -54,6 +62,9 @@ class MainWindow(QMainWindow):
         self.s_playerName.connect(self.enterPlayerName)
         self.s_startGame.connect(self.startGame)
         self.s_assignCharacter.connect(self.pickCharacter)
+        self.s_serverBroadCast.connect(self.showBroadCast)
+        self.s_assignCards.connect(self.assignCards)
+        self.s_moveOptions.connect(self.setMoveOptions)
 
     def closeEvent(self, e):
         global _IsGameSessionJoined
@@ -83,8 +94,10 @@ class MainWindow(QMainWindow):
             
     def createGameClient(self):
         global _ServerAddress
+        self.clientThread = QThread()
         self.gameClient = Client(self, _ServerAddress)
-        self.gameClient.start()
+        self.gameClient.moveToThread(self.clientThread)
+        self.clientThread.start()
 
     def updateJoinServerGUI(self, isConnected: bool):
         if isConnected:
@@ -124,7 +137,7 @@ class MainWindow(QMainWindow):
         self.ui.Widget_GameInit.setVisible(False)
         self.ui.Widget_GamePlay.setVisible(True)
         self.ui.Widget_GamePlay_Waiting.setVisible(True)
-        print("StartGame")
+        self.ui.GamePlay_ServerBM.setText("Game is ready")
 
     def pickCharacter(self, characterOptions: list):
         self.ui.PickCharacter_comboBox.addItems(characterOptions)
@@ -138,9 +151,61 @@ class MainWindow(QMainWindow):
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
         else:
             selection = self.ui.PickCharacter_comboBox.currentIndex() + 1
-            print("Selected Index: ", self.ui.PickCharacter_comboBox.currentIndex())
+            # save and set GUI: GamePlay_PlayerCharacter
+            global _PlayerCharacter
+            _PlayerCharacter = self.ui.PickCharacter_comboBox.itemData(self.ui.PickCharacter_comboBox.currentIndex(), 2) # QUserRole=2, voodoo magic. don't know what that is.
+            self.ui.GamePlay_PlayerCharacter.setText(_PlayerCharacter)
             self.gameClient.tx_server(str(selection))
             self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
+
+    def assignCards(self, listOfCards: list):
+        self.ui.GamePlay_PlayerCards.addItems(listOfCards)
+
+    def setMoveOptions(self, options: list):
+        # disable all buttons, and set text color to gray
+        self.ui.GamePlay_NavDown.setEnabled(False)
+        self.ui.GamePlay_NavLeft.setEnabled(False)
+        self.ui.GamePlay_NavRight.setEnabled(False)
+        self.ui.GamePlay_NavTrapDoor.setEnabled(False)
+        self.ui.GamePlay_NavUp.setEnabled(False)
+        self.ui.GamePlay_Action_Suggest.setEnabled(False)
+        self.ui.GamePlay_Action_Accuse.setEnabled(False)
+        self.ui.GamePlay_Action_EndTurn.setEnabled(False)
+        self.ui.GamePlay_NavDown.setFlat(True)
+        self.ui.GamePlay_NavLeft.setFlat(True)
+        self.ui.GamePlay_NavRight.setFlat(True)
+        self.ui.GamePlay_NavTrapDoor.setFlat(True)
+        self.ui.GamePlay_NavUp.setFlat(True)
+        self.ui.GamePlay_Action_Suggest.setFlat(True)
+        self.ui.GamePlay_Action_Accuse.setFlat(True)
+        self.ui.GamePlay_Action_EndTurn.setFlat(True)
+        for i in options:
+            if i == "Move":
+                # this should based on the map location, enable all for now
+                self.ui.GamePlay_NavDown.setEnabled(True)
+                self.ui.GamePlay_NavLeft.setEnabled(True)
+                self.ui.GamePlay_NavRight.setEnabled(True)
+                self.ui.GamePlay_NavTrapDoor.setEnabled(True)
+                self.ui.GamePlay_NavUp.setEnabled(True)
+                self.ui.GamePlay_NavDown.setFlat(False)
+                self.ui.GamePlay_NavLeft.setFlat(False)
+                self.ui.GamePlay_NavRight.setFlat(False)
+                self.ui.GamePlay_NavTrapDoor.setFlat(False)
+                self.ui.GamePlay_NavUp.setFlat(False)
+            if i == "Suggest":
+                self.ui.GamePlay_Action_Suggest.setEnabled(True)
+                self.ui.GamePlay_Action_Suggest.setFlat(False)
+            if i == "Accuse":
+                self.ui.GamePlay_Action_Accuse.setEnabled(True)
+                self.ui.GamePlay_Action_Accuse.setFlat(False)
+            if i == "End Turn":
+                self.ui.GamePlay_Action_EndTurn.setEnabled(True)
+                self.ui.GamePlay_Action_EndTurn.setFlat(False)
+
+    def showBroadCast(self, msg: str):
+        existingMsg = self.ui.GamePlay_ServerBM.text()
+        self.ui.GamePlay_ServerBM.setText(Append.AddMessage(existingMsg, msg))
+    
         
 
 app = QApplication(sys.argv)

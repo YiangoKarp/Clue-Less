@@ -73,7 +73,6 @@ class ServerConnectionHandler():
         '''Request that the client provide a username'''
         client.send('AssignUserName'.encode('utf-8'))
         username = client.recv(3000).decode('utf-8')
-
         # TODO implement username validation and checking for duplicates
 
         self.users[username] = client # Save the username to client association

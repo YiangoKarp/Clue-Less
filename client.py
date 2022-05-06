@@ -9,11 +9,16 @@ import socket
 
 from PyQt6.QtCore import QThread, pyqtSignal, QObject
 
+from utils import Converters
+
 class Client(QThread):
     s_connect = pyqtSignal(bool)
     s_playerName = pyqtSignal()
     s_startGame = pyqtSignal()
     s_assignCharacter = pyqtSignal(list)
+    s_serverBroadCast = pyqtSignal(str)
+    s_assignCards = pyqtSignal(list)
+    s_moveOptions = pyqtSignal(list)
 
     def __init__(self, parent, serverAddress: str):
         super().__init__()
@@ -27,6 +32,9 @@ class Client(QThread):
         self.s_playerName.connect(self.gui.s_playerName.emit)
         self.s_startGame.connect(self.gui.s_startGame.emit)
         self.s_assignCharacter.connect(self.gui.s_assignCharacter.emit)
+        self.s_serverBroadCast.connect(self.gui.s_serverBroadCast.emit)
+        self.s_assignCards.connect(self.gui.s_assignCards.emit)
+        self.s_moveOptions.connect(self.gui.s_moveOptions.emit)
 
     def connectSocket(self):
         try:
@@ -37,9 +45,9 @@ class Client(QThread):
         except Exception as connection_failed:
             print(f'Error: Unable to connect to host {self.host}. Is the server currently running?')
             self.s_connect.emit(False)
+
         rx_thread = threading.Thread(target=self.rx_server, daemon = True) # Receive communication on a separate thread
         rx_thread.start()
-        #self.tx_server("") # Transmit communication from the main thread
         self.s_connect.emit(True)
 
     def tx_server(self, input: str):
@@ -67,22 +75,37 @@ class Client(QThread):
                         self.client.shutdown(socket.SHUT_RDWR)
                         self.client.close()
                     else:
-                        print("Get Command From Server:")
                         if msg == "AssignUserName":
+                            print("self.s_playerName.emit()")
                             self.s_playerName.emit()
                         elif msg == "BM_GameReady":
                             self.s_startGame.emit()
-                        elif "AssignCharacter" in msg:
-                            # process options to list
+                        elif "AssignCharacter@" in msg:
                             msg = msg.split("@")[1]
-                            characterOptions = msg.strip("][").replace("'", "").split(', ')
-                            # print("Processed options: ", characterOptions)
+                            characterOptions = Converters.Str2List(msg)
                             self.s_assignCharacter.emit(characterOptions)
-                        elif "Starting Game!":
-                            print("Starting Game!")
+                        elif "PlayerCard@" in msg:
+                            msg = msg.split("@")[1]
+                            cards = Converters.Str2List(msg)
+                            self.s_assignCards.emit(cards)
+                            print(f"PlayerCards: {cards}\n")
+                        elif "ExtraCard@" in msg:
+                            msg = msg.split("@")[1]
+                            cards = Converters.Str2List(msg)
+                            print(f"ExtraCards: {cards}\n")
+                            self.s_assignCards.emit(cards)
+                        elif "PlayerMoveOption@" in msg:
+                            msg = msg.split("@")[1]
+                            options = Converters.Str2List(msg)
+                            print(f"MoveOptions: {options}\n")
+                            self.s_moveOptions.emit(options)
+                        elif "BM_" in msg:
+                            # pipe every BM_ to server broad cast board
+                            self.s_serverBroadCast.emit(msg.replace("BM_",""))
                         else:
-                            print(msg)
+                            print("Unrecognized message: ", msg)
                 else:
+                    print("no message?")
                     break
             except Exception as rx_error:
                 print(rx_error)

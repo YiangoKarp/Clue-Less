@@ -51,7 +51,7 @@ def main(mode = 'initial'):
     gi = GameInitializer(sch.users) # Instantiate the GameInitializer module
 
     # Prompt each player to choose a character
-    sch.broadcast('Users will now select their characters when it is their turn..\n')
+    sch.broadcast('Users will now select their characters when it is their turn..')
     counter = 0
     for u in sch.users.items():
         selected_character = sch.choose_character(u[1], available_characters) # Get the players selected character
@@ -63,7 +63,7 @@ def main(mode = 'initial'):
     gi.generate_game_map()
     gi.initialize_player_locations()
 
-    sch.broadcast("Starting Game!")
+    # sch.broadcast("Starting Game!") marked as redundant
     # Initialize GameManager
     gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
 

@@ -1,3 +1,5 @@
+import time
+
 from card import Card
 from player import Player
 from location import Location
@@ -39,14 +41,21 @@ class GameManager:
         self.broadcast(f"It is {player.username}'s turn.")
 
         # At the start of a turn, add the following console visuals:
-        self.message_player(player,vi.game_map()) # Print the static game map
-        self.message_player(player, vi.ToGUI(self.players)) # colored game map
-        self.message_player(player, vi.player_cards(player))# Print a list of the player's cards
-        self.message_player(player, vi.extra_cards(self.extra_cards))# Print the extra cards
+        # self.message_player(player,vi.game_map()) # Print the static game map
+        playerCards = f"PlayerCard@{vi.player_cards(player)}"
+        extraCards = f"ExtraCard@{vi.extra_cards(self.extra_cards)}"
+        print("ServerPlayerCard: ", playerCards)
+        print("ServerExtraCards: ", extraCards)
+        self.message_player(player, playerCards)# Print a list of the player's cards
+        self.message_player(player, extraCards)# Print the extra cards
 
-        your_cards = [c.name for c in player.cards]
-        your_cards = ', '.join(your_cards)
-        self.message_player(player, f"Your cards: {your_cards}")
+        # marked as redundant
+        #your_cards = [c.name for c in player.cards]
+        #your_cards = ', '.join(your_cards)
+        #self.message_player(player, f"Your cards: {your_cards}")
+
+        # add artificial delay
+        time.sleep(0.25)
 
         turn = Turn(player)
         player_options = turn.generate_player_options(player)
@@ -105,12 +114,12 @@ class GameManager:
         return player_choice
 
     def receive_player_choice(self, player, player_options):
-        options = ''
-        for i in enumerate(player_options):
-            options += f'[{i[0]+1}] {i[1]}\n'
+        #options = ''
+        #for i in enumerate(player_options):
+            #options += f'[{i[0]+1}] {i[1]}\n'
 
         #options_prompt = "What would you like to do?: " + player_options[0]
-        options_prompt = f'What would you like to do? \n{options}'
+        options_prompt = f'PlayerMoveOption@{player_options}'
 
         '''for option in player_options[1:]:
             options_prompt = options_prompt + option'''
@@ -119,13 +128,16 @@ class GameManager:
         self.message_player(player, options_prompt)
         player_choice = int(player.client_id.recv(3000).decode('utf-8'))
         player_choice = player_options[player_choice-1]
+
+        '''
+        # marked deprecated, will be handled on the client side
         # Error handling for incorrect user input
         while player_choice not in player_options:#['1','2','3']: #player_options:
             error_options_prompt = "Invalid choice entered. " + options_prompt
 
             self.message_player(player, error_options_prompt)
             player_choice = player.client_id.recv(3000).decode('utf-8')
-
+        '''
         return player_choice
 
     def receive_player_move_choice(self, player, move_options):
@@ -381,9 +393,9 @@ class GameManager:
         '''Send a message to all clients'''
         print(f"[Broadcast Message] {msg}")
         for c in self.players:
-            c.client_id.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))
+            c.client_id.send(f"BM_{msg}".encode('utf-8'))
 
     def message_player(self, player, msg):
         '''Send a specific to a specific player'''
         #print(f"[Message to {player.username}] {msg}")
-        player.client_id.send(str(msg+'\n').encode('utf-8'))
+        player.client_id.send(str(msg).encode('utf-8'))
