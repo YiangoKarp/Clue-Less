@@ -6,19 +6,34 @@
 import sys
 import threading
 import socket
+import json
 
 from PyQt6.QtCore import QThread, pyqtSignal, QObject
 
 from utils import Converters
 
 class Client(QThread):
+
+    #region binding pyqtSignal
     s_connect = pyqtSignal(bool)
     s_playerName = pyqtSignal()
     s_startGame = pyqtSignal()
     s_assignCharacter = pyqtSignal(list)
     s_serverBroadCast = pyqtSignal(str)
     s_assignCards = pyqtSignal(list)
+    s_actionOptions = pyqtSignal(list)
     s_moveOptions = pyqtSignal(list)
+    s_locationUpdate = pyqtSignal(dict)
+    s_showCards = pyqtSignal(list)
+    s_addClue = pyqtSignal(str)
+    s_eliminated = pyqtSignal()
+    s_gameOver = pyqtSignal(str)
+    #endregion binding pyqtSignal
+
+    #region class variables
+    _PlayerCardsInitialized = False
+    _ExtraPlayerCardsInitialized = False
+    #endregion class variables
 
     def __init__(self, parent, serverAddress: str):
         super().__init__()
@@ -34,7 +49,13 @@ class Client(QThread):
         self.s_assignCharacter.connect(self.gui.s_assignCharacter.emit)
         self.s_serverBroadCast.connect(self.gui.s_serverBroadCast.emit)
         self.s_assignCards.connect(self.gui.s_assignCards.emit)
+        self.s_actionOptions.connect(self.gui.s_actionOptions.emit)
         self.s_moveOptions.connect(self.gui.s_moveOptions.emit)
+        self.s_locationUpdate.connect(self.gui.s_locationUpdate.emit)
+        self.s_showCards.connect(self.gui.s_showCards.emit)
+        self.s_addClue.connect(self.gui.s_addClue.emit)
+        self.s_eliminated.connect(self.gui.s_eliminated.emit)
+        self.s_gameOver.connect(self.gui.s_gameOver.emit)
 
     def connectSocket(self):
         try:
@@ -85,20 +106,47 @@ class Client(QThread):
                             characterOptions = Converters.Str2List(msg)
                             self.s_assignCharacter.emit(characterOptions)
                         elif "PlayerCard@" in msg:
-                            msg = msg.split("@")[1]
-                            cards = Converters.Str2List(msg)
-                            self.s_assignCards.emit(cards)
-                            print(f"PlayerCards: {cards}\n")
+                            if not self._PlayerCardsInitialized:
+                                msg = msg.split("@")[1]
+                                cards = Converters.Str2List(msg)
+                                self.s_assignCards.emit(cards)
+                                print(f"PlayerCards: {cards}\n")
+                                self._PlayerCardsInitialized = True
                         elif "ExtraCard@" in msg:
-                            msg = msg.split("@")[1]
-                            cards = Converters.Str2List(msg)
-                            print(f"ExtraCards: {cards}\n")
-                            self.s_assignCards.emit(cards)
-                        elif "PlayerMoveOption@" in msg:
+                            if not self._ExtraPlayerCardsInitialized:
+                                msg = msg.split("@")[1]
+                                cards = Converters.Str2List(msg)
+                                print(f"ExtraCards: {cards}\n")
+                                self.s_assignCards.emit(cards)
+                                self._ExtraPlayerCardsInitialized = True
+                        elif "PlayerActionOption@" in msg:
                             msg = msg.split("@")[1]
                             options = Converters.Str2List(msg)
-                            print(f"MoveOptions: {options}\n")
+                            print(f"ActionOptions: {options}\n")
+                            self.s_actionOptions.emit(options)
+                        elif "AvailablePosition@" in msg:
+                            msg = msg.split("@")[1]
+                            options = Converters.Str2List(msg)
+                            print(f"AvailablePosition: {options}")
                             self.s_moveOptions.emit(options)
+                        elif "LocationUpdate@" in msg:
+                            msg = msg.split("@")[1]
+                            options = json.loads(msg)
+                            print(f"LocationUpdate: {options}")
+                            self.s_locationUpdate.emit(options)
+                        elif "ShowCard@" in msg:
+                            msg = msg.split("@")[1]
+                            options = Converters.Str2List(msg)
+                            print(f"Showable Cards: {options}\n")
+                            self.s_showCards.emit(options)
+                        elif "Clue@" in msg:
+                            msg = msg.split("@")[1]
+                            self.s_addClue.emit(msg)
+                        elif msg == "Eliminated":
+                            self.s_eliminated.emit()
+                        elif "GameOver@" in msg:
+                            msg = msg.split("@")[1]
+                            self.s_gameOver.emit(msg)
                         elif "BM_" in msg:
                             # pipe every BM_ to server broad cast board
                             self.s_serverBroadCast.emit(msg.replace("BM_",""))
