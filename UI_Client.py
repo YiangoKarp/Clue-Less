@@ -284,7 +284,19 @@ class MainWindow(QMainWindow):
         print(f"movable locations: {locations}")
 
     def updateMap(self, locations: dict):
+        '''
+        Update the game map items on the grid
+        '''
+        '''
+        QGridLayout available positional function(s):
+        addItem(item,row=,column=)
+        removeItem(item) this doesn't have positional data
+
+        All items size should be 21x21, larger than that will cause significant misalignment on the map.
+        The row and column index also starts from 1 instead of 0, because 0 is used for styling in qt designer.
+        '''
         print(f"Locations: {locations}")
+        
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
