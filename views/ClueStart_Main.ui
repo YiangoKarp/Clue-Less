@@ -2301,6 +2301,9 @@
       <property name="styleSheet">
        <string notr="true">background: #B1B1B1</string>
       </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
      </widget>
      <widget class="QLabel" name="Actions_Label">
       <property name="geometry">
@@ -2332,6 +2335,9 @@
       </property>
       <property name="styleSheet">
        <string notr="true">background: #B1B1B1</string>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
       </property>
      </widget>
      <widget class="QPushButton" name="Actions_CancelBtn">
@@ -2367,6 +2373,9 @@
       </property>
       <property name="styleSheet">
        <string notr="true">background: #B1B1B1</string>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
       </property>
      </widget>
     </widget>
@@ -2462,6 +2471,9 @@
       </property>
       <property name="styleSheet">
        <string notr="true">background: #B1B1B1</string>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
       </property>
      </widget>
     </widget>
@@ -2623,6 +2635,9 @@
       </property>
       <property name="styleSheet">
        <string notr="true">background: #B1B1B1</string>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
       </property>
      </widget>
     </widget>

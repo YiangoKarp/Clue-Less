@@ -39,6 +39,13 @@ class GameManager:
         if players_left == 1:
             self.game_over = True
 
+    def getCurrentMap(self):
+        player_locations = {}
+        for i in self.players:
+            player_locations[i.character] = i.location.name
+        json_player_locations = json.dumps(player_locations)
+        return json_player_locations
+
     def run_turn(self, player):
         self.broadcast(f"It is {player.username}'s turn.")
 
@@ -46,8 +53,8 @@ class GameManager:
         # self.message_player(player,vi.game_map()) # Print the static game map
         playerCards = f"PlayerCard@{vi.player_cards(player)}"
         extraCards = f"ExtraCard@{vi.extra_cards(self.extra_cards)}"
-        print("ServerPlayerCard: ", playerCards)
-        print("ServerExtraCards: ", extraCards)
+        #print("ServerPlayerCard: ", playerCards)
+        #print("ServerExtraCards: ", extraCards)
         self.message_player(player, playerCards)# Print a list of the player's cards
         self.message_player(player, extraCards)# Print the extra cards
 
@@ -61,10 +68,7 @@ class GameManager:
 
         turn = Turn(player)
 
-        player_locations = {}
-        for i in self.players:
-            player_locations[i.character] = i.location.name
-        json_player_locations = json.dumps(player_locations)
+        json_player_locations = self.getCurrentMap()
         self.message_player(player, f"LocationUpdate@{json_player_locations}")
 
         # Get the movement options available to the player
@@ -98,10 +102,11 @@ class GameManager:
                 suggestion_values = self.get_player_choices(player)
                 # Inform all players of the suggestion
                 suggest_msg = player.username + " is making a suggestion: It was " + \
-                              suggestion_values[0] + " in the " + suggestion_values[2] + " with the " + \
-                              suggestion_values[1] + "!"
+                              suggestion_values[0] + " in the " + suggestion_values[1] + " with the " + \
+                              suggestion_values[2] + "!"
+                time.sleep(0.25)
                 self.broadcast(suggest_msg)
-
+                time.sleep(0.25)
                 # Find if any player is playing as the suggested character
                 player_to_move = None
                 for p in self.players:
@@ -112,7 +117,11 @@ class GameManager:
                 if player_to_move is not None:
                     self.move_player(player_to_move, player.location)
                     player_to_move.was_suggested = True # To help determine game options next turn
+                
+                json_player_locations = self.getCurrentMap()
+                self.broadcast(f"LocationUpdate@{json_player_locations}")
 
+                time.sleep(0.25)
                 # Run the suggestion
                 self.make_suggestion(player, suggestion_values)
 
@@ -167,7 +176,7 @@ class GameManager:
         options = [o.name for o in move_options]
         options_prompt = f"AvailablePositions@{options}"
         #options_prompt = options_prompt + options
-        
+
         # Send options prompt to user and receive their choice as numeric input
         self.message_player(player,options_prompt)
         player_choice_name = str(player.client_id.recv(3000).decode('utf-8')).upper()
@@ -196,8 +205,8 @@ class GameManager:
             player.location.moveable = False
 
         self.broadcast(player.username + " moved to " + new_location.name)
-
-    # For the UI, we will have to change this to a pop-up or something
+    
+    '''
     def get_suggestion_values(self, player):
         suggest_char_prompt = 'Which character committed the crime?:' + vi.suspects()
 
@@ -227,6 +236,7 @@ class GameManager:
         suggestion_values = [suggest_char_choice, suggest_weapon_choice, player.location.room_name]
 
         return suggestion_values
+    '''
 
     def make_suggestion(self, player, suggestion_values):
         # Get list of players from which to request a card
@@ -249,6 +259,8 @@ class GameManager:
                 # If 0 showable cards, message all players and move to next player
                 suggest_msg = showing_player.username + " was unable to show a card!"
                 self.broadcast(suggest_msg)
+                time.sleep(0.25)
+                self.message_player(player,f"Clue@{suggest_msg}")
                 request_ind = request_ind + 1
             else:
                 # If 1 showable card, that's the card. Otherwise, prompt for card selection
@@ -257,30 +269,33 @@ class GameManager:
                 else:
                     # Create prompt for card to show
                     # Use offset index for better UX. Should -1 when sending the actual card.
-                    card_show_prompt = "Which card would you like to show? " + showable_cards[0] + "[1]"
-                    showable_cards_index = 1
-                    for card_name in showable_cards[1:]:
-                        showable_cards_index += 1
-                        card_show_prompt = card_show_prompt + card_name + "[" + showable_cards_index + "] " 
+                    #$ card_show_prompt = "Which card would you like to show? " + showable_cards[0] + "[1]"
+                    # showable_cards_index = 1
+                    #for card_name in showable_cards[1:]:
+                    #    showable_cards_index += 1
+                    #    card_show_prompt = card_show_prompt + card_name + "[" + showable_cards_index + "] " 
 
                     #self.message_player(showing_player,card_show_prompt)
                     self.message_player(showing_player, f"ShowCard@{showable_cards}")
+                    time.sleep(0.25)
                     card_to_show = showing_player.client_id.recv(3000).decode('utf-8')
 
+                    '''
                     # Error handling if player enters incorrect value
                     while card_to_show not in showable_cards:
                         error_card_show_prompt = "That's not a showable card. " + card_show_prompt
 
                         self.message_player(showing_player,error_card_show_prompt)
                         card_to_show = showing_player.client_id.recv(3000).decode('utf-8')
-
+                    '''
                 # Finally, show the card to the suggesting player and tell all players a card was shown
                 #card_showing_prompt = showing_player.username + " shows you " + card_to_show
                 #self.message_player(player,card_showing_prompt)
-                self.message_player(player,f"Clue@{card_to_show}")
-
-                self.broadcast(showing_player.username + " showed a card to " + player.username + "!")
-
+                promt = showing_player.username + " showed a card to " + player.username + "!"
+                self.broadcast(promt)
+                time.sleep(0.25)
+                clueMsg = f"{showing_player.character} showed the {card_to_show}"
+                self.message_player(player,f"Clue@{clueMsg}")
                 # Update player's checklist?
         return
 
@@ -295,6 +310,7 @@ class GameManager:
                       accusation_values[0] + " in the " + accusation_values[2] + " with the " + \
                       accusation_values[1] + "!"
         self.broadcast(accuse_msg)
+        time.sleep(0.25)
 
         # Check accusation values against answer
         correct_accuse = self.check_accusation_values(accusation_values)
@@ -302,22 +318,25 @@ class GameManager:
         # If accusation is correct, set self.game_over to True
         if correct_accuse:
             self.broadcast(player.username + "'s accusation was correct!")
+            time.sleep(0.25)
             self.broadcast(f"GameOver@{accusation_values[0]}")
             self.game_over = True
         else: # If accusation is wrong, remove player from the players list
             self.broadcast(player.username + "'s accusation was wrong! " +
                            player.username + " has been eliminated!")
+            time.sleep(0.25)
             self.message_player(player, "Eliminated")
             player.eliminated = True
 
         return # Nothing is returned. Moving to next turn will check the number of players left.
-
+    '''
     # For the UI, we will have to change this to a pop-up or something
     def get_accusation_values(self, player):
         accuse_char_prompt = 'Which character committed the crime?:' + vi.suspects()
         self.message_player(player,accuse_char_prompt)
         accuse_char_choice = int(player.client_id.recv(3000).decode('utf-8'))
         accuse_char_choice = self.character_name_list()[accuse_char_choice-1]
+
 
         # Error handling for incorrect suggestion player input
         while accuse_char_choice not in self.character_name_list():
@@ -353,6 +372,7 @@ class GameManager:
         accusation_values = [accuse_char_choice, accuse_weapon_choice, accuse_location_choice]
 
         return accusation_values
+    '''
 
     def check_accusation_values(self, accusation_values):
         correct_count = 0

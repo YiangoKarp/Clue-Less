@@ -13,7 +13,7 @@ from functools import partial
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtCore import QThread, pyqtSignal
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from PyQt6.QtGui import QStandardItemModel, QStandardItem, QTextCursor
 
 from client import Client
 
@@ -179,6 +179,7 @@ class MainWindow(QMainWindow):
 
     def pickCharacter(self, characterOptions: list):
         self.ui.PickCharacter_comboBox.addItems(characterOptions)
+        self.ui.PickCharacter_comboBox.setCurrentIndex(0)
         self.ui.Widget_GamePlay_Waiting.setVisible(False)
         self.ui.Widget_GamePlay_PickCharacter.setVisible(True)
         self.ui.PickCharacter_ConfirmBtn.clicked.connect(self.confirmPickedCharacter)
@@ -192,11 +193,6 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_PlayerCharacter.setText(_PlayerCharacter)
         self.gameClient.tx_server(str(selection))
         self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
-        # save other characters to a separate list
-        global _LivingCharacters
-        tempList = SUSPECTS.copy()
-        tempList.remove(_PlayerCharacter)
-        _LivingCharacters = tempList
 
     def assignCards(self, listOfCards: list):
         self.ui.GamePlay_PlayerCards.addItems(listOfCards)
@@ -232,10 +228,8 @@ class MainWindow(QMainWindow):
                 # disable other options explicitly
                 self.disableOtherActions()
             elif option == "End Turn":
-                pass
-            self.gameClient.tx_server(str(index+1))
-            if option != "Move":
                 self.disableAllActions()
+            self.gameClient.tx_server(str(index+1))
         except ValueError as vError:
             print(f"This shouldn't happen {vError}")
         except Exception as error:
@@ -255,6 +249,9 @@ class MainWindow(QMainWindow):
         self.ui.Actions_SuspectComboBox.addItems(_LivingCharacters)
         self.ui.Actions_WeaponComboBox.addItems(WEAPONS.copy())
         self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
+        self.ui.Actions_SuspectComboBox.setCurrentIndex(0)
+        self.ui.Actions_WeaponComboBox.setCurrentIndex(0)
+        self.ui.Actions_RoomComboBox.setCurrentIndex(0)
         # bind buttons event
         self.ui.Actions_ConfirmBtn.clicked.connect(partial(self.runAction, False))
         self.ui.Actions_CancelBtn.clicked.connect(partial(self.runAction, True))
@@ -351,7 +348,7 @@ class MainWindow(QMainWindow):
         Library(A3): (2,8)
         Billard(C3): (8,8)
         Dining(E3): (14,8)
-        Conserv(A5): (2,15)
+        Conserv(A5): (2,14)
         Ball Room(C5): (8,14)
         Kitchen(E5): (14,14)
 
@@ -389,24 +386,34 @@ class MainWindow(QMainWindow):
             point.setFixedWidth(20)
             self.ui.GamePlay_MapGrid.addWidget(point,characterMapCoord[1],characterMapCoord[0])
         _PlayerLocations = locations
+        # also update the living characters
+        global _LivingCharacters
+        tList = list(locations.keys())
+        tList.remove(_PlayerCharacter)
+        _LivingCharacters = tList
+            
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
         self.ui.ShowCards_ComboBox.addItems(options)
+        self.ui.ShowCards_ComboBox.setCurrentIndex(0)
         # bind button event
-        self.ui.ShowCards_ComfirmBtn.clicked.connect(self.showCardToPlayer)
+        self.ui.ShowCards_ConfirmBtn.clicked.connect(self.showCardToPlayer)
 
     def showCardToPlayer(self):
         card = self.ui.ShowCards_ComboBox.itemData(self.ui.ShowCards_ComboBox.currentIndex(), 2)
         self.gameClient.tx_server(card)
+        self.ui.Widget_GamePlay_ShowCards.setVisible(False)
 
     def showBroadCast(self, msg: str):
         existingMsg = self.ui.GamePlay_ServerBM.toPlainText()
         self.ui.GamePlay_ServerBM.setText(Append.AddMessage(existingMsg, msg))
+        self.ui.GamePlay_ServerBM.moveCursor(QTextCursor.MoveOperation.End)
 
     def showClues(self, msg: str):
         existingMsg = self.ui.GamePlay_ObtainedClues.toPlainText()
         self.ui.GamePlay_ObtainedClues.setText(Append.AddMessage(existingMsg, msg))
+        self.ui.GamePlay_ObtainedClues.moveCursor(QTextCursor.MoveOperation.End)
     
     def eliminated(self):
         print("END")

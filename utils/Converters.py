@@ -67,7 +67,7 @@ def GetMapCoord(location: str):
     elif location == "E4":
         return (14, 11)
     elif location == "A5":
-        return (2, 15)
+        return (2, 14)
     elif location == "B5":
         return (5, 14)
     elif location == "C5":
