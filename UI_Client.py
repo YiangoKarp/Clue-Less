@@ -17,7 +17,7 @@ from PyQt6.QtGui import QStandardItemModel, QStandardItem, QTextCursor
 
 from client import Client
 
-from utils import Converters, Append, Enums
+from utils import Converters, Append, Enums, MapHelper
 
 #region reference
 SUSPECTS = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -301,8 +301,8 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_Action_Move.setEnabled(False)
         self.ui.GamePlay_Action_Move.setFlat(True)
         global _PlayerLocation
-        fullDirection = Converters.GetMovableDirection(_PlayerLocation)
-        adjacentLocations = Converters.GetAdjacentLocations(_PlayerLocation)
+        fullDirection = MapHelper.GetMovableDirection(_PlayerLocation)
+        adjacentLocations = MapHelper.GetAdjacentLocations(_PlayerLocation)
         availableIndexes = []
         for availableLocation in options:
             try:
@@ -330,7 +330,7 @@ class MainWindow(QMainWindow):
                 
     def sendMovement(self, moveTo: Enums.EDirection):
         global _PlayerLocation, _PlayerLocations, _PlayerCharacter
-        nextLocation = Converters.GetAdjacentLocation(_PlayerLocation, moveTo)
+        nextLocation = MapHelper.GetAdjacentLocation(_PlayerLocation, moveTo)
         print("NextLocation: ", nextLocation)
         self.gameClient.tx_server(nextLocation)
         self.disableAllMovement()
@@ -396,10 +396,10 @@ class MainWindow(QMainWindow):
                 widget.deleteLater()
 
         isLocationSet = False
+        tempLocationList = []
         for character, location in locations.items():
             # get character color
             characterColor = Converters.GetCharacterColor(character)
-            # characterLocationID = Converters.GetLocationID(location)
             characterLocationID = location
             global _PlayerCharacter
             if not isLocationSet:
@@ -407,8 +407,27 @@ class MainWindow(QMainWindow):
                     global _PlayerLocation
                     _PlayerLocation = characterLocationID
                     isLocationSet = True
-            characterMapCoord = Converters.GetMapCoord(characterLocationID)
-            print(f"{character} Map Coord: {characterMapCoord[1]}, {characterMapCoord[0]}")
+            characterMapCoord = MapHelper.GetMapCoord(characterLocationID)
+            # check collision in room
+            if len(tempLocationList) > 0:
+                nPlayerInLocation = MapHelper.GetNPlayersInLocation(tempLocationList, characterLocationID)
+                if nPlayerInLocation > 0:
+                    # dumb offset
+                    if nPlayerInLocation == 1:
+                        characterMapCoord = (characterMapCoord[0] - 1, characterMapCoord[1] - 1)
+                    elif nPlayerInLocation == 2:
+                        characterMapCoord = (characterMapCoord[0] - 1, characterMapCoord[1])
+                    elif nPlayerInLocation == 3:
+                        characterMapCoord = (characterMapCoord[0] + 1, characterMapCoord[1] - 1)
+                    elif nPlayerInLocation == 4:
+                        characterMapCoord = (characterMapCoord[0] + 1, characterMapCoord[1])
+                    elif nPlayerInLocation == 5:
+                        characterMapCoord = (characterMapCoord[0] - 1, characterMapCoord[1] + 1)
+                    else:
+                        characterMapCoord = (characterMapCoord[0] + 1, characterMapCoord[1] + 1)
+
+            tempLocationList.append(characterLocationID)
+            #print(f"{character} Map Coord: {characterMapCoord[1]}, {characterMapCoord[0]}")
             point = QFrame()
             point.setStyleSheet(f"font-family: 'Segoe UI'; font-size: 12pt; background: {characterColor};")
             point.setFixedHeight(20)
