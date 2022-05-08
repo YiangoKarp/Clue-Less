@@ -84,6 +84,7 @@ def main(mode = 'initial'):
     gm.end_game()
 
     sch.broadcast('Each player will now vote if they want to play another game.')
+    time.sleep(0.25)
     if sch.play_again_vote():
         # Restart Game.
         main(mode = 'restart')

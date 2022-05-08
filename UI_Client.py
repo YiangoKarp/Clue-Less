@@ -37,7 +37,6 @@ _PlayerLocations = {}
 #endregion global variables
 
 class MainWindow(QMainWindow):
-
     #region binding pyqtSignal
     s_connect = pyqtSignal(bool)
     s_playerName = pyqtSignal()
@@ -52,14 +51,18 @@ class MainWindow(QMainWindow):
     s_addClue = pyqtSignal(str)
     s_eliminated = pyqtSignal()
     s_gameOver = pyqtSignal(str)
+    s_gameVote = pyqtSignal()
+    s_restartGameSession = pyqtSignal()
+    s_endGameSession = pyqtSignal()
     #endregion binding pyqtSignal
-
+    
     def __init__(self):
         super().__init__()
         self.ui = uic.loadUi(".\\views\\ClueStart_Main.ui", self)
         self.intializeComponents()
         self.signalBinding()
         self.show()
+        self.clientThread = QThread()
 
     def intializeComponents(self):
         #region GUI styling
@@ -69,6 +72,8 @@ class MainWindow(QMainWindow):
         self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
         self.ui.Widget_GamePlay_ShowCards.setVisible(False)
         self.ui.Widget_GamePlay_Waiting.setVisible(False)
+        self.ui.Widget_GamePlay_Eliminated.setVisible(False)
+        self.ui.Widget_GamePlay_GameOver.setVisible(False)
         #endregion GUI styling
         #region GUI action binding
         self.ui.Btn_JoinServer.clicked.connect(self.joinServer)
@@ -89,6 +94,9 @@ class MainWindow(QMainWindow):
         self.s_addClue.connect(self.showClues)
         self.s_eliminated.connect(self.eliminated)
         self.s_gameOver.connect(self.gameOver)
+        self.s_gameVote.connect(self.showVoteButtons)
+        self.s_restartGameSession.connect(self.restartGameSession)
+        self.s_endGameSession.connect(self.endGameSession)
 
     def closeEvent(self, e):
         global _IsGameSessionJoined
@@ -119,10 +127,10 @@ class MainWindow(QMainWindow):
             
     def createGameClient(self):
         global _ServerAddress
-        self.clientThread = QThread()
         self.gameClient = Client(self, _ServerAddress)
         self.gameClient.moveToThread(self.clientThread)
         self.clientThread.start()
+            
 
     def updateJoinServerGUI(self, isConnected: bool):
         if isConnected:
@@ -147,7 +155,7 @@ class MainWindow(QMainWindow):
     
     def sendPlayerName(self):
         global _PlayerName
-        _PlayerName = self.ui.Entry_2.text()
+        _PlayerName = self.ui.PlayerName_Entry.text()
         self.gameClient.tx_server(_PlayerName)
         self.ui.Widget_GamePlay_Waiting.setVisible(True)
 #endregion join game
@@ -178,18 +186,18 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_NavTrapDoor.clicked.connect(partial(self.sendMovement, Enums.EDirection.TrapDoor))
 
     def pickCharacter(self, characterOptions: list):
-        self.ui.PickCharacter_comboBox.addItems(characterOptions)
-        self.ui.PickCharacter_comboBox.setCurrentIndex(0)
+        self.ui.PickCharacter_ComboBox.addItems(characterOptions)
+        self.ui.PickCharacter_ComboBox.setCurrentIndex(0)
         self.ui.Widget_GamePlay_Waiting.setVisible(False)
         self.ui.Widget_GamePlay_PickCharacter.setVisible(True)
         self.ui.PickCharacter_ConfirmBtn.clicked.connect(self.confirmPickedCharacter)
         print("options: ", characterOptions)
     
     def confirmPickedCharacter(self):
-        selection = self.ui.PickCharacter_comboBox.currentIndex() + 1
+        selection = self.ui.PickCharacter_ComboBox.currentIndex() + 1
         # save and set GUI: GamePlay_PlayerCharacter
         global _PlayerCharacter
-        _PlayerCharacter = self.ui.PickCharacter_comboBox.itemData(self.ui.PickCharacter_comboBox.currentIndex(), 2) # QUserRole=2, voodoo magic. don't know what that is.
+        _PlayerCharacter = self.ui.PickCharacter_ComboBox.itemData(self.ui.PickCharacter_ComboBox.currentIndex(), 2) # QUserRole=2, voodoo magic. don't know what that is.
         self.ui.GamePlay_PlayerCharacter.setText(_PlayerCharacter)
         color = Converters.GetCharacterColor(_PlayerCharacter)
         self.ui.GamePlay_PlayerCharacter.setStyleSheet(f"color: {color};")
@@ -426,12 +434,43 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_ObtainedClues.moveCursor(QTextCursor.MoveOperation.End)
     
     def eliminated(self):
-        print("END")
+        self.ui.Widget_GamePlay_Eliminated.setVisible(True)
+        self.ui.Eliminated_WatchGameBtn.clicked.connect(self.hideEliminatedView)
     
-    def gameOver(self, player: str):
-        print(f"{player} is the killer. Game Over")
+    def hideEliminatedView(self):
+        self.ui.Widget_GamePlay_Eliminated.setVisible(False)
+        # make sure to disable all actions
+        self.disableAllActions()
+
+    def gameOver(self, message: str):
+        print(f"{message}")
+        self.ui.Widget_GamePlay_GameOver.setVisible(True)
+        self.ui.GameOver_Label.setText(message)
+        self.ui.GameOver_VotePrompt.setVisible(True)
+        self.ui.GameOver_EndGameBtn.setVisible(False)
+        self.ui.GameOver_PlayAgainBtn.setVisible(False)
+        self.disableAllActions()
+    
+    def showVoteButtons(self):
+        self.ui.GameOver_VotePrompt.setText("Waiting for vote...")
+        self.ui.GameOver_VotePrompt.setVisible(False)
+        self.ui.GameOver_EndGameBtn.setVisible(True)
+        self.ui.GameOver_PlayAgainBtn.setVisible(True)
+        self.ui.GameOver_EndGameBtn.clicked.connect(partial(self.voteNextGame, True))
+        self.ui.GameOver_PlayAgainBtn.clicked.connect(partial(self.voteNextGame, False))
+    
+    def voteNextGame(self, endGame: bool):
+        self.ui.GameOver_VotePrompt.setText("Waiting for vote result...")
+        self.ui.GameOver_VotePrompt.setVisible(True)
+        self.ui.GameOver_EndGameBtn.setVisible(False)
+        self.ui.GameOver_PlayAgainBtn.setVisible(False)
+        if endGame:
+            self.gameClient.tx_server("2")
+        else:
+            self.gameClient.tx_server("1")
 #endregion Game play functions  
 
+# region game GUI action controls
     def disableAllActions(self):
         '''
         Disable all action buttons before players turn and after
@@ -476,6 +515,130 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_Action_Accuse.setFlat(True)
         self.ui.GamePlay_Action_EndTurn.setEnabled(False)
         self.ui.GamePlay_Action_EndTurn.setFlat(True)
+#endregion game GUI action controls
+
+#region game session controls
+    def restartGameSession(self):
+        self.clearAllGamePlayComponents()
+        self.clearGlobalVariables(True)
+        self.disconnectAllConnections()
+
+    def endGameSession(self):
+        answer = QMessageBox.question(
+            window, None,
+            "The majority voted to stop playing. Close the game?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            app.quit()
+        else:
+            self.gameClient.exit()
+            self.clearGlobalVariables()
+            self.disconnectAllConnections()
+            self.intializeComponents()
+            self.ui.PlayerName_Entry.setText("")
+            self.ui.Widget_JoinServer.setVisible(True)
+            self.ui.Widget_GameInit.setVisible(True)
+
+    def disconnectAllConnections(self):
+        try:
+            self.ui.Btn_JoinServer.clicked.disconnect(self.joinServer)
+            self.ui.Btn_ConfirmPlayer.clicked.disconnect(self.sendPlayerName)
+        except:
+            pass
+        try:
+            self.ui.GamePlay_Action_Suggest.clicked.disconnect(partial(self.sendActionChoice, "Suggest"))
+            self.ui.GamePlay_Action_Accuse.clicked.disconnect(partial(self.sendActionChoice, "Accuse"))
+            self.ui.GamePlay_Action_EndTurn.clicked.disconnect(partial(self.sendActionChoice, "End Turn"))
+            self.ui.GamePlay_Action_Move.clicked.disconnect(partial(self.sendActionChoice, "Move"))
+            self.ui.GamePlay_NavRight.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Right))
+            self.ui.GamePlay_NavLeft.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Left))
+            self.ui.GamePlay_NavUp.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Up))
+            self.ui.GamePlay_NavDown.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Down))
+            self.ui.GamePlay_NavTrapDoor.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.TrapDoor))
+        except:
+            pass
+        try:
+            self.ui.PickCharacter_ConfirmBtn.clicked.disconnect(self.confirmPickedCharacter)
+        except:
+            pass
+        try:
+            self.ui.Actions_ConfirmBtn.clicked.disconnect(partial(self.runAction, False))
+            self.ui.Actions_CancelBtn.clicked.disconnect(partial(self.runAction, True))
+        except:
+            pass
+        try:
+            self.ui.ShowCards_ConfirmBtn.clicked.disconnect(self.showCardToPlayer)
+        except:
+            pass
+        try:
+            self.ui.Eliminated_WatchGameBtn.clicked.disconnect(self.hideEliminatedView)
+        except:
+            pass
+        try:
+            self.ui.GameOver_EndGameBtn.clicked.disconnect(partial(self.voteNextGame, True))
+            self.ui.GameOver_PlayAgainBtn.clicked.disconnect(partial(self.voteNextGame, False))
+        except:
+            pass
+
+    def clearGlobalVariables(self, isPartial: bool = False):
+        global _IsGameSessionJoined, _ServerAddress, _PlayerName, _PlayerCharacter , \
+            _PlayerCharacter, _PlayerCards, _PlayerOptionsTemp, _LivingCharacters, \
+            _PlayerLocation, _PlayerLocations
+        if isPartial:
+            _PlayerCharacter = ""
+            _PlayerCards = []
+            _PlayerOptionsTemp = []
+            _LivingCharacters = []
+            _PlayerLocation = ""
+            _PlayerLocations = {}
+        else:
+            _IsGameSessionJoined = False
+            _ServerAddress = ""
+            _PlayerName = ""
+            _PlayerCharacter = ""
+            _PlayerCards = []
+            _PlayerOptionsTemp = []
+            _LivingCharacters = []
+            _PlayerLocation = ""
+            _PlayerLocations = {}
+
+    def clearAllGamePlayComponents(self):
+        #region widgets
+        self.ui.Widget_GamePlay_Actions.setVisible(False)
+        self.ui.Widget_GamePlay_Eliminated.setVisible(False)
+        self.ui.Widget_GamePlay_GameOver.setVisible(False)
+        self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
+        self.ui.Widget_GamePlay_ShowCards.setVisible(False)
+        self.ui.Widget_GamePlay_Waiting.setVisible(False)
+        #endregion widgets
+        #region GamePlay components
+        self.ui.GamePlay_ObtainedClues.setText("")
+        self.ui.GamePlay_PlayerCards.clear()
+        self.ui.GamePlay_PlayerCharacter.setText("")
+        self.ui.GamePlay_PlayerList.setText("")
+        self.ui.GamePlay_ServerBM.setText("")
+        for i in reversed(range(self.ui.GamePlay_MapGrid.count())): 
+            widget = self.ui.GamePlay_MapGrid.itemAt(i).widget()
+            if "background: #00000000;" not in widget.styleSheet():
+                widget.deleteLater()
+        #endregion GamePlay components
+        #region GamePlay_Actions
+        self.ui.Actions_RoomComboBox.clear()
+        self.ui.Actions_SuspectComboBox.clear()
+        self.ui.Actions_WeaponComboBox.clear()
+        #endregion GamePlay_Actions
+        #region GamePlay_PickCharacter
+        self.ui.PickCharacter_ComboBox.clear()
+        #endregion GamePlay_PickCharacter
+        #region GamePlay_ShowCards
+        self.ui.ShowCards_ComboBox.clear()
+        #endregion GamePlay_ShowCards
+        #region GameOver
+        self.ui.GameOver_Label.setText("")
+        #endregion GameOver
+
+#endregion game session controls
 
 app = QApplication(sys.argv)
 window = MainWindow()

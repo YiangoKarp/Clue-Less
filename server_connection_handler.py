@@ -100,23 +100,26 @@ class ServerConnectionHandler():
         play_again_tally = 0
 
         for client in self.clients:
-            client.send('Would you like to play again?\n [1] Yes [2] No'.encode('utf-8'))
+            client.send("Vote".encode('utf-8'))
             selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            print("Voted:", selection)
             if selection == 1:
                 play_again_tally += 1
 
         vote = play_again_tally/len(self.clients)
-        if vote > 0.5:
+        if vote >= 0.5:
             # Majority voted to play again
-            self.broadcast('The majority vote is to play again!')
+            self.broadcast('PlayAgain')
+            time.sleep(1)   # give enough time for client to refresh
             return True
-        elif vote == 0.5:
+        #elif vote == 0.5:
             # Equal vote on both sides
-            self.broadcast('The vote was 50-50. Please make up your minds and vote again!')
-            self.play_again_vote(self)
+            #self.broadcast('The vote was 50-50. Please make up your minds and vote again!')
+            #self.play_again_vote(self)
         else:
             # Majority voted to stop playing
-            self.broadcast("The majority voted to stop playing. Goodbye!")
+            # self.broadcast("The majority voted to stop playing. Goodbye!")
+            self.broadcast('Kick')
             return False
 
     def kick_players(self):
@@ -124,6 +127,7 @@ class ServerConnectionHandler():
         # Send message client app to signal disconnection
         for client in self.clients:
             client.send('kick'.encode('utf-8'))
+            time.sleep(0.25)
         self.clients = [] # Wipe clients from SCH
         
 

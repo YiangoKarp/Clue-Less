@@ -1,13 +1,13 @@
 import time
 import json
 
-from card import Card
+#from card import Card
 from player import Player
-from location import Location
+#from location import Location
 from turn import Turn
-import console_visuals as vi
+#import console_visuals as vi
 
-from utils import Converters
+#from utils import Converters
 
 class GameManager:
     def __init__(self, players: list[Player], extra_cards, case_file_cards):
@@ -46,9 +46,12 @@ class GameManager:
         json_player_locations = json.dumps(player_locations)
         return json_player_locations
 
-    def initialDataPush(self):
+    def broadCastMapUpdate(self):
         json_player_locations = self.getCurrentMap()
         self.broadcast(f"LocationUpdate@{json_player_locations}")
+
+    def initialDataPush(self):
+        self.broadCastMapUpdate()
         time.sleep(0.25)
         for player in self.players:
             playerCards = [card.name for card in player.cards]
@@ -59,6 +62,8 @@ class GameManager:
             time.sleep(0.25)
 
     def run_turn(self, player):
+        self.broadCastMapUpdate()
+        time.sleep(0.25)
         self.broadcast(f"It is {player.username}'s turn.") 
         # At the start of a turn, add the following console visuals:
         # self.message_player(player,vi.game_map()) # Print the static game map
@@ -102,6 +107,7 @@ class GameManager:
                 player_move_choice = self.receive_player_move_choice(player, player_move_options)
                 # Move the player
                 self.move_player(player, player_move_choice)
+                self.broadCastMapUpdate()
                 turn.moved = True # Player has moved their location this turn. They can't move locations again until the next turn.
             if player_choice == "Suggest":
                 # Get string names of character, weapon, and room for suggestion, in that order
@@ -125,8 +131,7 @@ class GameManager:
                     self.move_player(player_to_move, player.location)
                     player_to_move.was_suggested = True # To help determine game options next turn
                 
-                json_player_locations = self.getCurrentMap()
-                self.broadcast(f"LocationUpdate@{json_player_locations}")
+                self.broadCastMapUpdate()
 
                 time.sleep(0.25)
                 # Run the suggestion
@@ -141,6 +146,7 @@ class GameManager:
 
         player.was_suggested = False # Reset in case they started out suggested
 
+        self.broadCastMapUpdate()
         # Return player choice because it could end on End Turn or Accuse
         # GameManager will act differently, depending on the result of the turn
         return player_choice
@@ -326,7 +332,7 @@ class GameManager:
         if correct_accuse:
             self.broadcast(player.username + "'s accusation was correct!")
             time.sleep(0.25)
-            self.broadcast(f"GameOver@{accusation_values[0]}")
+            self.broadcast(f"GameOver@{accuse_msg}")
             self.game_over = True
         else: # If accusation is wrong, remove player from the players list
             self.broadcast(player.username + "'s accusation was wrong! " +
@@ -384,7 +390,7 @@ class GameManager:
     def check_accusation_values(self, accusation_values):
         correct_count = 0
         for acc_val in accusation_values:
-            if acc_val in ["Col. Mustard", "Hall", "revolver"]:
+            if acc_val in ["Col. Mustard", "Hall", "Revolver"]:
                 correct_count = correct_count + 1
             #for c in self.case_file_cards:
             #    if acc_val == c.name:
@@ -426,7 +432,7 @@ class GameManager:
                 cf_loc = cfc
 
         # Broadcast the answer to everyone
-        self.broadcast("It was " + cf_char.name + " with the " + cf_weap.name + " in the " + cf_loc.name)
+        self.broadcast(f"GameOver@It was {cf_char.name} with the {cf_weap.name} in the {cf_loc.name}")
 
         return
 

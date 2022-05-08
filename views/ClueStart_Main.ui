@@ -134,7 +134,7 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLineEdit" name="Entry_2">
+     <widget class="QLineEdit" name="PlayerName_Entry">
       <property name="geometry">
        <rect>
         <x>190</x>
@@ -2463,7 +2463,7 @@
        <string>Pick a character</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="PickCharacter_comboBox">
+     <widget class="QComboBox" name="PickCharacter_ComboBox">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -2506,7 +2506,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>240</y>
+       <y>245</y>
        <width>321</width>
        <height>111</height>
       </rect>
@@ -2645,11 +2645,233 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QWidget" name="Widget_GamePlay_Eliminated" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>600</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #90000000; </string>
+    </property>
+    <widget class="QFrame" name="Eliminated_Frame">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>215</y>
+       <width>321</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: #3B3B3B;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="Waiting_Label_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>40</y>
+        <width>321</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 16pt;</string>
+      </property>
+      <property name="text">
+       <string>You have been eliminated!</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="Eliminated_WatchGameBtn">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>281</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Watch Game</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="Widget_GamePlay_GameOver" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>600</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: #90000000; </string>
+    </property>
+    <widget class="QFrame" name="GameOver_Frame">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>215</y>
+       <width>321</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: #3B3B3B;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="GameOver_Label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>281</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 16pt;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="GameOver_EndGameBtn">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>136</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>End Game</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="GameOver_PlayAgainBtn">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>110</y>
+        <width>131</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Play Again</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="GameOver_VotePrompt">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>281</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 16pt;</string>
+      </property>
+      <property name="text">
+       <string>Waiting for vote...</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </widget>
    <zorder>Widget_GameInit</zorder>
    <zorder>Widget_GamePlay</zorder>
    <zorder>Widget_GamePlay_PickCharacter</zorder>
    <zorder>Widget_GamePlay_ShowCards</zorder>
    <zorder>Widget_GamePlay_Actions</zorder>
+   <zorder>Widget_GamePlay_Eliminated</zorder>
+   <zorder>Widget_GamePlay_GameOver</zorder>
    <zorder>Widget_GamePlay_Waiting</zorder>
   </widget>
  </widget>

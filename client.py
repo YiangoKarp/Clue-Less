@@ -31,6 +31,9 @@ class Client(QThread):
     s_addClue = pyqtSignal(str)
     s_eliminated = pyqtSignal()
     s_gameOver = pyqtSignal(str)
+    s_gameVote = pyqtSignal()
+    s_restartGameSession = pyqtSignal()
+    s_endGameSession = pyqtSignal()
     #endregion binding pyqtSignal
 
     #region class variables
@@ -59,6 +62,9 @@ class Client(QThread):
         self.s_addClue.connect(self.gui.s_addClue.emit)
         self.s_eliminated.connect(self.gui.s_eliminated.emit)
         self.s_gameOver.connect(self.gui.s_gameOver.emit)
+        self.s_gameVote.connect(self.gui.s_gameVote.emit)
+        self.s_restartGameSession.connect(self.gui.s_restartGameSession.emit)
+        self.s_endGameSession.connect(self.gui.s_endGameSession.emit)
 
     def connectSocket(self):
         try:
@@ -149,6 +155,12 @@ class Client(QThread):
                         elif "GameOver@" in msg:
                             msg = msg.split("@")[1]
                             self.s_gameOver.emit(msg)
+                        elif msg == "Vote":
+                            self.s_gameVote.emit()
+                        elif msg == "BM_PlayAgain":
+                            self.s_restartGameSession.emit()
+                        elif msg == "BM_Kick":
+                            self.s_endGameSession.emit()
                         elif "BM_" in msg:
                             # pipe every BM_ to server broad cast board
                             self.s_serverBroadCast.emit(msg.replace("BM_",""))
@@ -159,5 +171,5 @@ class Client(QThread):
                     break
             except Exception as rx_error:
                 print(rx_error)
-                self.s_connect.emit(False)
+                #self.s_connect.emit(False)
                 break
