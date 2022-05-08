@@ -12,8 +12,11 @@ from PyQt6.QtCore import QThread, pyqtSignal, QObject
 
 from utils import Converters
 
-class Client(QThread):
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from UI_Client import MainWindow
 
+class Client(QThread):
     #region binding pyqtSignal
     s_connect = pyqtSignal(bool)
     s_playerName = pyqtSignal()
@@ -22,7 +25,6 @@ class Client(QThread):
     s_serverBroadCast = pyqtSignal(str)
     s_assignCards = pyqtSignal(list)
     s_actionOptions = pyqtSignal(list)
-    s_moveOptions = pyqtSignal(list)
     s_locationUpdate = pyqtSignal(dict)
     s_showCards = pyqtSignal(list)
     s_addClue = pyqtSignal(str)
@@ -35,7 +37,7 @@ class Client(QThread):
     _ExtraPlayerCardsInitialized = False
     #endregion class variables
 
-    def __init__(self, parent, serverAddress: str):
+    def __init__(self, parent: 'MainWindow', serverAddress: str):
         super().__init__()
         self.host = serverAddress
         self.gui = parent
@@ -50,7 +52,6 @@ class Client(QThread):
         self.s_serverBroadCast.connect(self.gui.s_serverBroadCast.emit)
         self.s_assignCards.connect(self.gui.s_assignCards.emit)
         self.s_actionOptions.connect(self.gui.s_actionOptions.emit)
-        self.s_moveOptions.connect(self.gui.s_moveOptions.emit)
         self.s_locationUpdate.connect(self.gui.s_locationUpdate.emit)
         self.s_showCards.connect(self.gui.s_showCards.emit)
         self.s_addClue.connect(self.gui.s_addClue.emit)
@@ -124,11 +125,6 @@ class Client(QThread):
                             options = Converters.Str2List(msg)
                             print(f"ActionOptions: {options}\n")
                             self.s_actionOptions.emit(options)
-                        elif "AvailablePosition@" in msg:
-                            msg = msg.split("@")[1]
-                            options = Converters.Str2List(msg)
-                            print(f"AvailablePosition: {options}")
-                            self.s_moveOptions.emit(options)
                         elif "LocationUpdate@" in msg:
                             msg = msg.split("@")[1]
                             options = json.loads(msg)

@@ -68,10 +68,10 @@ class GameManager:
         self.message_player(player, f"LocationUpdate@{json_player_locations}")
 
         # Get the movement options available to the player
-        player_move_options = turn.generate_player_move_options(player)
+        # player_move_options = turn.generate_player_move_options(player)
         # Receive player's move choice
-        player_move_choice = [o.name for o in player_move_options]
-        self.message_player(player, f"AvailablePosition@{player_move_choice}")
+        # player_move_choice = [o.name for o in player_move_options]
+        # self.message_player(player, f"AvailablePosition@{player_move_choice}")
 
         # add artificial delay
         time.sleep(0.25)
@@ -84,8 +84,6 @@ class GameManager:
         # 3. Receive player's next choice
         while player_choice != "End Turn" and player_choice != "Accuse":
             # Execute player's choice
-            '''
-            Moved
             if player_choice == "Move":
                 # Get the movement options available to the player
                 player_move_options = turn.generate_player_move_options(player)
@@ -94,7 +92,6 @@ class GameManager:
                 # Move the player
                 self.move_player(player, player_move_choice)
                 turn.moved = True # Player has moved their location this turn. They can't move locations again until the next turn.
-            '''
             if player_choice == "Suggest":
                 # Get string names of character, weapon, and room for suggestion, in that order
                 # suggestion_values = self.get_suggestion_values(player)
@@ -178,9 +175,9 @@ class GameManager:
         # ...
 
         # Find the Location object with the name selected by the player
-        player_choice = list(filter(lambda option: option.name == player_choice_name, move_options))[0]
+        # player_choice = list(filter(lambda option: option.name == player_choice_name, move_options))[0]
 
-        return player_choice # Return the location object
+        return player_choice_name # Return the location object
 
     def move_player(self, player, new_location):
         # Update values of Location object for player's current location

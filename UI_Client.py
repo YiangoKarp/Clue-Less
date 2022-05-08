@@ -5,6 +5,7 @@
 # darkmode color design guide: https://uxdesign.cc/dark-mode-ui-design-the-definitive-guide-part-1-color-53dcfaea5129
 # style sheet: https://doc.qt.io/qt-5/stylesheet-reference.html
 
+from operator import ne
 import sys
 import threading
 from functools import partial
@@ -16,7 +17,7 @@ from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
 from client import Client
 
-from utils import Converters, Append
+from utils import Converters, Append, Enums
 
 #region reference
 SUSPECTS = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
@@ -31,6 +32,8 @@ _PlayerCharacter = ""
 _PlayerCards = []
 _PlayerOptionsTemp = []
 _LivingCharacters = []
+_PlayerLocation = ""
+_PlayerLocations = {}
 #endregion global variables
 
 class MainWindow(QMainWindow):
@@ -43,7 +46,6 @@ class MainWindow(QMainWindow):
     s_serverBroadCast = pyqtSignal(str)
     s_assignCards = pyqtSignal(list)
     s_actionOptions = pyqtSignal(list)
-    s_moveOptions = pyqtSignal(list)
     s_locationUpdate = pyqtSignal(dict)
     s_showCards = pyqtSignal(list)
     s_addClue = pyqtSignal(str)
@@ -80,7 +82,6 @@ class MainWindow(QMainWindow):
         self.s_serverBroadCast.connect(self.showBroadCast)
         self.s_assignCards.connect(self.assignCards)
         self.s_actionOptions.connect(self.setActionOptions)
-        self.s_moveOptions.connect(self.showMoveOptions)
         self.s_locationUpdate.connect(self.updateMap)
         self.s_showCards.connect(self.showCardsView)
         self.s_addClue.connect(self.showClues)
@@ -141,7 +142,6 @@ class MainWindow(QMainWindow):
         print("enterPlayerName")
         self.ui.Widget_JoinServer.setVisible(False)
         self.ui.Widget_ConfirmPlayer.setVisible(True)
-        pass
     
     def sendPlayerName(self):
         global _PlayerName
@@ -153,15 +153,27 @@ class MainWindow(QMainWindow):
 #region Game play functions
     def startGame(self):
         self.ui.Widget_GameInit.setVisible(False)
+        # set grid minimum size
+        for i in range(15):
+            self.ui.GamePlay_MapGrid.setRowMinimumHeight(i, 20)
+            self.ui.GamePlay_MapGrid.setColumnMinimumWidth(i, 20)
         self.ui.Widget_GamePlay.setVisible(True)
         self.ui.Widget_GamePlay_Waiting.setVisible(True)
         self.ui.GamePlay_ServerBM.setText("Game is ready")
         self.bindGamePlayEvents()
+        self.disableAllActions()
 
     def bindGamePlayEvents(self):
         self.ui.GamePlay_Action_Suggest.clicked.connect(partial(self.sendActionChoice, "Suggest"))
         self.ui.GamePlay_Action_Accuse.clicked.connect(partial(self.sendActionChoice, "Accuse"))
         self.ui.GamePlay_Action_EndTurn.clicked.connect(partial(self.sendActionChoice, "End Turn"))
+        self.ui.GamePlay_Action_Move.clicked.connect(partial(self.sendActionChoice, "Move"))
+
+        self.ui.GamePlay_NavRight.clicked.connect(partial(self.sendMovement, Enums.EDirection.Right))
+        self.ui.GamePlay_NavLeft.clicked.connect(partial(self.sendMovement, Enums.EDirection.Left))
+        self.ui.GamePlay_NavUp.clicked.connect(partial(self.sendMovement, Enums.EDirection.Up))
+        self.ui.GamePlay_NavDown.clicked.connect(partial(self.sendMovement, Enums.EDirection.Down))
+        self.ui.GamePlay_NavTrapDoor.clicked.connect(partial(self.sendMovement, Enums.EDirection.TrapDoor))
 
     def pickCharacter(self, characterOptions: list):
         self.ui.PickCharacter_comboBox.addItems(characterOptions)
@@ -192,56 +204,38 @@ class MainWindow(QMainWindow):
     def setActionOptions(self, options: list):
         global _PlayerOptionsTemp
         _PlayerOptionsTemp = options
-        # disable all buttons, and set text color to gray
-        self.ui.GamePlay_NavDown.setEnabled(False)
-        self.ui.GamePlay_NavLeft.setEnabled(False)
-        self.ui.GamePlay_NavRight.setEnabled(False)
-        self.ui.GamePlay_NavTrapDoor.setEnabled(False)
-        self.ui.GamePlay_NavUp.setEnabled(False)
-        self.ui.GamePlay_Action_Suggest.setEnabled(False)
-        #self.ui.GamePlay_Action_Accuse.setEnabled(False)
-        #self.ui.GamePlay_Action_EndTurn.setEnabled(False)
-        self.ui.GamePlay_NavDown.setFlat(True)
-        self.ui.GamePlay_NavLeft.setFlat(True)
-        self.ui.GamePlay_NavRight.setFlat(True)
-        self.ui.GamePlay_NavTrapDoor.setFlat(True)
-        self.ui.GamePlay_NavUp.setFlat(True)
-        self.ui.GamePlay_Action_Suggest.setFlat(True)
-        #self.ui.GamePlay_Action_Accuse.setFlat(True)
-        #self.ui.GamePlay_Action_EndTurn.setFlat(True)
         for i in options:
-            if i == "Move":
-                # this should based on the map location, enable all for now
-                self.ui.GamePlay_NavDown.setEnabled(True)
-                self.ui.GamePlay_NavLeft.setEnabled(True)
-                self.ui.GamePlay_NavRight.setEnabled(True)
-                self.ui.GamePlay_NavTrapDoor.setEnabled(True)
-                self.ui.GamePlay_NavUp.setEnabled(True)
-                self.ui.GamePlay_NavDown.setFlat(False)
-                self.ui.GamePlay_NavLeft.setFlat(False)
-                self.ui.GamePlay_NavRight.setFlat(False)
-                self.ui.GamePlay_NavTrapDoor.setFlat(False)
-                self.ui.GamePlay_NavUp.setFlat(False)
             if i == "Suggest":
                 self.ui.GamePlay_Action_Suggest.setEnabled(True)
                 self.ui.GamePlay_Action_Suggest.setFlat(False)
-            '''
-            always true
-            if i == "Accuse":
-                self.ui.GamePlay_Action_Accuse.setEnabled(True)
-                self.ui.GamePlay_Action_Accuse.setFlat(False)
-            if i == "End Turn":
-                self.ui.GamePlay_Action_EndTurn.setEnabled(True)
-                self.ui.GamePlay_Action_EndTurn.setFlat(False)
-            '''
-
+        # accuse and endturn always available
+        self.ui.GamePlay_Action_Accuse.setEnabled(True)
+        self.ui.GamePlay_Action_Accuse.setFlat(False)
+        self.ui.GamePlay_Action_EndTurn.setEnabled(True)
+        self.ui.GamePlay_Action_EndTurn.setFlat(False)
+        
     def sendActionChoice(self, option: str):
         try:
             global _PlayerOptionsTemp
             index = _PlayerOptionsTemp.index(option)
-            self.gameClient.tx_server(str(index+1))
-            if option != "End Turn":
+            if option == "Suggest":
                 self.showActionDetailView(option)
+            elif option == "Accuse":
+                self.showActionDetailView(option)
+            elif option == "Move":
+                self.getAvailableMovement()
+                # disable other options explicitly
+                self.ui.GamePlay_Action_Suggest.setEnabled(False)
+                self.ui.GamePlay_Action_Suggest.setFlat(True)
+                self.ui.GamePlay_Action_Accuse.setEnabled(False)
+                self.ui.GamePlay_Action_Accuse.setFlat(True)
+                self.ui.GamePlay_Action_EndTurn.setEnabled(False)
+                self.ui.GamePlay_Action_EndTurn.setFlat(True)
+            elif option == "End Turn":
+                pass
+            self.gameClient.tx_server(str(index+1))
+            if option != "Move":
+                self.disableAllActions()
         except ValueError as vError:
             print(f"This shouldn't happen {vError}")
         except Exception as error:
@@ -276,16 +270,44 @@ class MainWindow(QMainWindow):
         if not isCanceled:
             result = f"{suspect}@{room}@{weapon}"
             self.gameClient.tx_server(result)
+            self.disableAllActions()
         else:
             self.ui.Widget_GamePlay_Actions.setVisible(False)
-    
-    def showMoveOptions(self, locations: list):
-        #dynamic binding?
-        print(f"movable locations: {locations}")
+
+    def getAvailableMovement(self):
+        global _PlayerLocation
+        availableDirection = Converters.GetMovableDirection(_PlayerLocation)
+        for j in availableDirection:
+            if j == Enums.EDirection.Right:
+                self.ui.GamePlay_NavRight.setEnabled(True)
+                self.ui.GamePlay_NavRight.setFlat(False)
+            elif j == Enums.EDirection.Left:
+                self.ui.GamePlay_NavLeft.setEnabled(True)
+                self.ui.GamePlay_NavLeft.setFlat(False)
+            elif j == Enums.EDirection.Up:
+                self.ui.GamePlay_NavUp.setEnabled(True)
+                self.ui.GamePlay_NavUp.setFlat(False)
+            elif j == Enums.EDirection.Down:
+                self.ui.GamePlay_NavDown.setEnabled(True)
+                self.ui.GamePlay_NavDown.setFlat(False)    
+            elif j == Enums.EDirection.TrapDoor:
+                self.ui.GamePlay_NavTrapDoor.setEnabled(True)
+                self.ui.GamePlay_NavTrapDoor.setFlat(False)
+                
+    def sendMovement(self, moveTo: Enums.EDirection):
+        global _PlayerLocation
+        nextLocation = Converters.GetAdjacentLocation(_PlayerLocation, moveTo)
+        print("NextLocation: ", nextLocation)
+        self.gameClient.tx_server(nextLocation)
+        # modify local map
+        global _PlayerLocations, _PlayerCharacter
+        _PlayerLocations[_PlayerCharacter] = nextLocation
+        self.updateMap(_PlayerLocations)
 
     def updateMap(self, locations: dict):
         '''
         Update the game map items on the grid
+        dictionary format: {characterName, location}
         '''
         '''
         QGridLayout available positional function(s):
@@ -295,8 +317,66 @@ class MainWindow(QMainWindow):
         All items size should be 21x21, larger than that will cause significant misalignment on the map.
         The row and column index also starts from 1 instead of 0, because 0 is used for styling in qt designer.
         '''
-        print(f"Locations: {locations}")
-        
+        '''
+        Map coordinates reference:
+        xx 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
+        1  A1 A1 A1          C1 C1 C1          E1 E1 E1
+        2  A1 A1 A1 B1 B1 B1 C1 C1 C1 D1 D1 D1 E1 E1 E1
+        3  A1 A1 A1          C1 C1 C1          E1 E1 E1
+        4     A2                C2                E2
+        5     A2                C2                E2
+        6     A2                C2                E2
+        7  A3 A3 A3          C3 C3 C3          E3 E3 E3
+        8  A3 A3 A3 B3 B3 B3 C3 C3 C3 D3 D3 D3 E3 E3 E3
+        9  A3 A3 A3          C3 C3 C3          E3 E3 E3
+        10    A4                C4                E4
+        11    A4                C4                E4
+        12    A4                C4                E4
+        13 A5 A5 A5          C5 C5 C5          E5 E5 E5
+        14 A5 A5 A5 B5 B5 B5 C5 C5 C5 D5 D5 D5 E5 E5 E5
+        15 A5 A5 A5          C5 C5 C5          E5 E5 E5
+
+        Center point of each area (Y,X):
+        Study(A1): (2,2)
+        Hall(C1): (8,2)
+        Lounge(E1): (14,2)
+        Library(A3): (2,8)
+        Billard(C3): (8,8)
+        Dining(E3): (14,8)
+        Conserv(A5): (2,15)
+        Ball Room(C5): (8,14)
+        Kitchen(E5): (14,14)
+
+        if trap door  (Y,X):
+            Study(A1): (3,3)
+            Lounge(E1): (13,3)
+            Conserv(A5): (3,13)
+            Kitchen(E5): (13,13)
+        '''
+        print(f"Locations Update Map: {locations}")
+        isLocationSet = False
+        global _PlayerLocations
+        _PlayerLocations = locations
+        for character, location in locations.items():
+            # get character color
+            characterColor = Converters.GetCharacterColor(character)
+            characterLocationID = Converters.GetLocationID(location)
+            global _PlayerCharacter
+            if not isLocationSet:
+                if character == _PlayerCharacter:
+                    global _PlayerLocation
+                    _PlayerLocation = characterLocationID
+                    isLocationSet = True
+            characterMapCoord = Converters.GetMapCoord(characterLocationID)
+            print(f"{character} Map Coord: {characterMapCoord[1]}, {characterMapCoord[0]}")
+            point = QFrame()
+            point.setStyleSheet(f"font-family: 'Segoe UI'; font-size: 12pt; background: {characterColor};")
+            point.setFixedHeight(20)
+            point.setFixedWidth(20)
+            previousItem = self.ui.GamePlay_MapGrid.itemAtPosition(characterMapCoord[1], characterMapCoord[0])
+            if previousItem is not None:
+                self.ui.GamePlay_MapGrid.removeItem(previousItem)
+            self.ui.GamePlay_MapGrid.addWidget(point,characterMapCoord[1],characterMapCoord[0])
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
@@ -315,15 +395,34 @@ class MainWindow(QMainWindow):
     def showClues(self, msg: str):
         existingMsg = self.ui.GamePlay_ObtainedClues.toPlainText()
         self.ui.GamePlay_ObtainedClues.setText(Append.AddMessage(existingMsg, msg))
-
+    
     def eliminated(self):
         print("END")
     
     def gameOver(self, player: str):
         print(f"{player} is the killer. Game Over")
-
 #endregion Game play functions  
-        
+
+    def disableAllActions(self):
+        '''
+        Disable all action buttons before players turn and after
+        '''
+        self.ui.GamePlay_NavDown.setEnabled(False)
+        self.ui.GamePlay_NavDown.setFlat(True)
+        self.ui.GamePlay_NavLeft.setEnabled(False)
+        self.ui.GamePlay_NavLeft.setFlat(True)
+        self.ui.GamePlay_NavRight.setEnabled(False)
+        self.ui.GamePlay_NavRight.setFlat(True)
+        self.ui.GamePlay_NavTrapDoor.setEnabled(False)
+        self.ui.GamePlay_NavTrapDoor.setFlat(True)
+        self.ui.GamePlay_NavUp.setEnabled(False)
+        self.ui.GamePlay_NavUp.setFlat(True)
+        self.ui.GamePlay_Action_Suggest.setEnabled(False)
+        self.ui.GamePlay_Action_Suggest.setFlat(True)
+        self.ui.GamePlay_Action_Accuse.setEnabled(False)
+        self.ui.GamePlay_Action_Accuse.setFlat(True)
+        self.ui.GamePlay_Action_EndTurn.setEnabled(False)
+        self.ui.GamePlay_Action_EndTurn.setFlat(True)
 
 app = QApplication(sys.argv)
 window = MainWindow()
