@@ -33,7 +33,7 @@ _PlayerCards = []
 _PlayerOptionsTemp = []
 _LivingCharacters = []
 _PlayerLocation = ""
-_PlayerLocations = []
+_PlayerLocations = {}
 #endregion global variables
 
 class MainWindow(QMainWindow):
@@ -207,6 +207,9 @@ class MainWindow(QMainWindow):
         global _PlayerOptionsTemp
         _PlayerOptionsTemp = options
         for i in options:
+            if i == "Move":
+                self.ui.GamePlay_Action_Move.setEnabled(True)
+                self.ui.GamePlay_Action_Move.setFlat(False)
             if i == "Suggest":
                 self.ui.GamePlay_Action_Suggest.setEnabled(True)
                 self.ui.GamePlay_Action_Suggest.setFlat(False)
@@ -227,12 +230,7 @@ class MainWindow(QMainWindow):
             elif option == "Move":
                 # self.getAvailableMovement()
                 # disable other options explicitly
-                self.ui.GamePlay_Action_Suggest.setEnabled(False)
-                self.ui.GamePlay_Action_Suggest.setFlat(True)
-                self.ui.GamePlay_Action_Accuse.setEnabled(False)
-                self.ui.GamePlay_Action_Accuse.setFlat(True)
-                self.ui.GamePlay_Action_EndTurn.setEnabled(False)
-                self.ui.GamePlay_Action_EndTurn.setFlat(True)
+                self.disableOtherActions()
             elif option == "End Turn":
                 pass
             self.gameClient.tx_server(str(index+1))
@@ -272,9 +270,7 @@ class MainWindow(QMainWindow):
         if not isCanceled:
             result = f"{suspect}@{room}@{weapon}"
             self.gameClient.tx_server(result)
-            self.disableAllActions()
-        else:
-            self.ui.Widget_GamePlay_Actions.setVisible(False)
+        self.ui.Widget_GamePlay_Actions.setVisible(False)
 
     def getAvailableMovement(self, options: list):
         print("getAvailableMovement")
@@ -311,7 +307,7 @@ class MainWindow(QMainWindow):
         nextLocation = Converters.GetAdjacentLocation(_PlayerLocation, moveTo)
         print("NextLocation: ", nextLocation)
         self.gameClient.tx_server(nextLocation)
-        self.gameClient.tx_server("End Turn")
+        self.disableAllMovement()
         # modify local map
         _PlayerLocations[_PlayerCharacter] = nextLocation
         self.updateMap(_PlayerLocations)
@@ -367,12 +363,12 @@ class MainWindow(QMainWindow):
         '''
         print(f"Locations Update Map: {locations}")
         global _PlayerLocations
-        if len(_PlayerLocations) > 0:
-                for loc in _PlayerLocations:
-                    previousCoord = Converters.GetMapCoord(loc)
-                    previousItem = self.ui.GamePlay_MapGrid.itemAtPosition(previousCoord[1], previousCoord[0])
-                    if previousItem is not None:
-                        self.ui.GamePlay_MapGrid.removeItem(previousItem)
+        # hard clear
+        for i in reversed(range(self.ui.GamePlay_MapGrid.count())): 
+            widget = self.ui.GamePlay_MapGrid.itemAt(i).widget()
+            if "background: #00000000;" not in widget.styleSheet():
+                widget.deleteLater()
+
         isLocationSet = False
         for character, location in locations.items():
             # get character color
@@ -433,6 +429,30 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_NavTrapDoor.setFlat(True)
         self.ui.GamePlay_NavUp.setEnabled(False)
         self.ui.GamePlay_NavUp.setFlat(True)
+        self.ui.GamePlay_Action_Move.setEnabled(False)
+        self.ui.GamePlay_Action_Move.setFlat(True)
+        self.ui.GamePlay_Action_Suggest.setEnabled(False)
+        self.ui.GamePlay_Action_Suggest.setFlat(True)
+        self.ui.GamePlay_Action_Accuse.setEnabled(False)
+        self.ui.GamePlay_Action_Accuse.setFlat(True)
+        self.ui.GamePlay_Action_EndTurn.setEnabled(False)
+        self.ui.GamePlay_Action_EndTurn.setFlat(True)
+
+    def disableAllMovement(self):
+        self.ui.GamePlay_NavDown.setEnabled(False)
+        self.ui.GamePlay_NavDown.setFlat(True)
+        self.ui.GamePlay_NavLeft.setEnabled(False)
+        self.ui.GamePlay_NavLeft.setFlat(True)
+        self.ui.GamePlay_NavRight.setEnabled(False)
+        self.ui.GamePlay_NavRight.setFlat(True)
+        self.ui.GamePlay_NavTrapDoor.setEnabled(False)
+        self.ui.GamePlay_NavTrapDoor.setFlat(True)
+        self.ui.GamePlay_NavUp.setEnabled(False)
+        self.ui.GamePlay_NavUp.setFlat(True)
+        self.ui.GamePlay_Action_Move.setEnabled(False)
+        self.ui.GamePlay_Action_Move.setFlat(True)
+
+    def disableOtherActions(self):
         self.ui.GamePlay_Action_Suggest.setEnabled(False)
         self.ui.GamePlay_Action_Suggest.setFlat(True)
         self.ui.GamePlay_Action_Accuse.setEnabled(False)
