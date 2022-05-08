@@ -50,7 +50,11 @@ class ServerConnectionHandler():
 
     def broadcast(self, msg: str):
         '''Send a message to all clients'''
-        print(f"[Broadcast Message] {msg}")
+        if "@" in msg:
+            printMsg = msg.split("@")[1]
+            print(f"[Broadcast Message] {printMsg}")
+        else:    
+            print(f"[Broadcast Message] {msg}")
         for c in self.clients:
             c.send(f"BM_{msg}".encode('utf-8'))
 
