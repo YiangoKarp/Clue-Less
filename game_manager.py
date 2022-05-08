@@ -42,7 +42,8 @@ class GameManager:
     def getCurrentMap(self):
         player_locations = {}
         for i in self.players:
-            player_locations[i.character] = i.location.name
+            if not i.eliminated:
+                player_locations[i.character] = i.location.name
         json_player_locations = json.dumps(player_locations)
         return json_player_locations
 
@@ -98,7 +99,7 @@ class GameManager:
         # 1. Execute player's choice,
         # 2. Generate player's options,
         # 3. Receive player's next choice
-        while player_choice != "End Turn" and player_choice != "Accuse":
+        while player_choice != "End Turn" and not self.game_over:
             # Execute player's choice
             if player_choice == "Move":
                 # Get the movement options available to the player
@@ -107,38 +108,51 @@ class GameManager:
                 player_move_choice = self.receive_player_move_choice(player, player_move_options)
                 # Move the player
                 self.move_player(player, player_move_choice)
+                time.sleep(0.25)
                 self.broadCastMapUpdate()
+                time.sleep(0.25)
                 turn.moved = True # Player has moved their location this turn. They can't move locations again until the next turn.
-            if player_choice == "Suggest":
+            elif player_choice == "Suggest":
                 # Get string names of character, weapon, and room for suggestion, in that order
                 # suggestion_values = self.get_suggestion_values(player)
-                suggestion_values = self.get_player_choices(player)
-                # Inform all players of the suggestion
-                suggest_msg = player.username + " is making a suggestion: It was " + \
-                              suggestion_values[0] + " in the " + suggestion_values[1] + " with the " + \
-                              suggestion_values[2] + "!"
-                time.sleep(0.25)
-                self.broadcast(suggest_msg)
-                time.sleep(0.25)
-                # Find if any player is playing as the suggested character
-                player_to_move = None
-                for p in self.players:
-                    if p.character == suggestion_values[0]:
-                        player_to_move = p
-
-                # If the player exists, move them
-                if player_to_move is not None:
-                    self.move_player(player_to_move, player.location)
-                    player_to_move.was_suggested = True # To help determine game options next turn
-                
-                self.broadCastMapUpdate()
-
-                time.sleep(0.25)
-                # Run the suggestion
-                self.make_suggestion(player, suggestion_values)
-
-                # Update Turn so player's options are accurate
                 turn.suggested = True
+                try:
+                    suggestion_values = self.get_player_choices(player)
+                    # Inform all players of the suggestion
+                    suggest_msg = player.username + " is making a suggestion: It was " + \
+                                suggestion_values[0] + " in the " + suggestion_values[1] + " with the " + \
+                                suggestion_values[2] + "!"
+                    time.sleep(0.25)
+                    self.broadcast(suggest_msg)
+                    time.sleep(0.25)
+                    # Find if any player is playing as the suggested character
+                    player_to_move = None
+                    for p in self.players:
+                        if p.character == suggestion_values[0]:
+                            player_to_move = p
+
+                    # If the player exists, move them
+                    if player_to_move is not None:
+                        self.move_player(player_to_move, player.location)
+                        player_to_move.was_suggested = True # To help determine game options next turn
+                    time.sleep(0.25)
+                    self.broadCastMapUpdate()
+
+                    time.sleep(0.25)
+                    # Run the suggestion
+                    self.make_suggestion(player, suggestion_values)
+                except Exception as error:
+                    # probably canceled and then activate other actions
+                    print("Suggestion Error: ", error)
+                    turn.suggested = False
+            elif player_choice == "Accuse":
+                isCanceled = self.run_accusation(player)
+                if isCanceled:
+                    pass
+                else:
+                    return "End turn" # early exit
+            else:
+                pass
 
             player_options = turn.generate_player_options(player)
 
@@ -158,15 +172,22 @@ class GameManager:
 
         #options_prompt = "What would you like to do?: " + player_options[0]
         options_prompt = f'PlayerActionOption@{player_options}'
-
+        print("options_prompt: ", options_prompt)
         '''for option in player_options[1:]:
             options_prompt = options_prompt + option'''
-
+        time.sleep(0.25)
         # Send options prompt to user and receive their choice as numeric input
         self.message_player(player, options_prompt)
-        player_choice = int(player.client_id.recv(3000).decode('utf-8'))
-        player_choice = player_options[player_choice-1]
 
+        player_choice = ""
+        try:
+            player_choice = int(player.client_id.recv(3000).decode('utf-8'))
+            player_choice = player_options[player_choice-1]
+        except:
+            # canceled
+            return "Cancel"
+
+        print("Received option: ", player_choice)
         '''
         # marked deprecated, will be handled on the client side
         # Error handling for incorrect user input
@@ -189,9 +210,10 @@ class GameManager:
         options = [o.name for o in move_options]
         options_prompt = f"AvailablePositions@{options}"
         #options_prompt = options_prompt + options
-
+        time.sleep(0.25)
         # Send options prompt to user and receive their choice as numeric input
         self.message_player(player,options_prompt)
+
         player_choice_name = str(player.client_id.recv(3000).decode('utf-8')).upper()
 
         # Error handling for incorrect user input
@@ -253,7 +275,12 @@ class GameManager:
 
     def make_suggestion(self, player, suggestion_values):
         # Get list of players from which to request a card
-        players_to_request = self.players[:self.player_num_going] + self.players[self.player_num_going + 1:]
+        players_to_request_full = self.players[:self.player_num_going] + self.players[self.player_num_going + 1:]
+        players_to_request = []
+        # filter out the eliminated player
+        for p in players_to_request_full:
+            if not p.eliminated:
+                players_to_request.append(p)
 
         request_ind = 0
         card_to_show = None
@@ -318,30 +345,37 @@ class GameManager:
         # Get accusation values
         #accusation_values = self.get_accusation_values(player)
         accusation_values = self.get_player_choices(player)
+        print("accusation_values: ", accusation_values)
         # Broadcast to all players the accusation
-        accuse_msg = player.username + " is making an ACCUSATION: It was " + \
-                      accusation_values[0] + " in the " + accusation_values[2] + " with the " + \
-                      accusation_values[1] + "!"
-        self.broadcast(accuse_msg)
-        time.sleep(0.25)
-
-        # Check accusation values against answer
-        correct_accuse = self.check_accusation_values(accusation_values)
-
-        # If accusation is correct, set self.game_over to True
-        if correct_accuse:
-            self.broadcast(player.username + "'s accusation was correct!")
+        try:
+            accuse_msg = player.username + " is making an ACCUSATION: It was " + \
+                        accusation_values[0] + " in the " + accusation_values[2] + " with the " + \
+                        accusation_values[1] + "!"
+            self.broadcast(accuse_msg)
             time.sleep(0.25)
-            self.broadcast(f"GameOver@{accuse_msg}")
-            self.game_over = True
-        else: # If accusation is wrong, remove player from the players list
-            self.broadcast(player.username + "'s accusation was wrong! " +
-                           player.username + " has been eliminated!")
-            time.sleep(0.25)
-            self.message_player(player, "Eliminated")
-            player.eliminated = True
 
-        return # Nothing is returned. Moving to next turn will check the number of players left.
+            # Check accusation values against answer
+            correct_accuse = self.check_accusation_values(accusation_values)
+
+            # If accusation is correct, set self.game_over to True
+            if correct_accuse:
+                self.broadcast(player.username + "'s accusation was correct!")
+                time.sleep(0.25)
+                self.broadcast(f"GameOver@{accuse_msg}")
+                self.game_over = True
+            else: # If accusation is wrong, remove player from the players list
+                self.broadcast(player.username + "'s accusation was wrong! " +
+                            player.username + " has been eliminated!")
+                #time.sleep(0.25)
+                #self.broadcast(f"Eliminated@{player.character}")
+                time.sleep(0.25)
+                self.message_player(player, "Eliminated")
+                player.eliminated = True
+            return False
+        except:
+            # canceled
+            pass
+        return True # isCanceled
     '''
     # For the UI, we will have to change this to a pop-up or something
     def get_accusation_values(self, player):

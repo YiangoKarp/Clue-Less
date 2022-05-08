@@ -31,6 +31,7 @@ _PlayerName = ""
 _PlayerCharacter = ""
 _PlayerCards = []
 _PlayerOptionsTemp = []
+_AllPlayerList = []
 _LivingCharacters = []
 _PlayerLocation = ""
 _PlayerLocations = {}
@@ -178,6 +179,7 @@ class MainWindow(QMainWindow):
         self.ui.GamePlay_Action_Accuse.clicked.connect(partial(self.sendActionChoice, "Accuse"))
         self.ui.GamePlay_Action_EndTurn.clicked.connect(partial(self.sendActionChoice, "End Turn"))
         self.ui.GamePlay_Action_Move.clicked.connect(partial(self.sendActionChoice, "Move"))
+        self.ui.Actions_CancelBtn.clicked.connect(partial(self.sendActionChoice, "Cancel"))
 
         self.ui.GamePlay_NavRight.clicked.connect(partial(self.sendMovement, Enums.EDirection.Right))
         self.ui.GamePlay_NavLeft.clicked.connect(partial(self.sendMovement, Enums.EDirection.Left))
@@ -212,6 +214,12 @@ class MainWindow(QMainWindow):
     def setActionOptions(self, options: list):
         global _PlayerOptionsTemp
         _PlayerOptionsTemp = options
+        # disable buttons first
+        self.ui.GamePlay_Action_Move.setEnabled(False)
+        self.ui.GamePlay_Action_Move.setFlat(True)
+        self.ui.GamePlay_Action_Suggest.setEnabled(False)
+        self.ui.GamePlay_Action_Suggest.setFlat(True)
+        # enable if option exists
         for i in options:
             if i == "Move":
                 self.ui.GamePlay_Action_Move.setEnabled(True)
@@ -228,7 +236,9 @@ class MainWindow(QMainWindow):
     def sendActionChoice(self, option: str):
         try:
             global _PlayerOptionsTemp
+            _PlayerOptionsTemp.append("Cancel") # add cancel option anyway. doesn't matter
             index = _PlayerOptionsTemp.index(option)
+            print(f"Option set: {_PlayerOptionsTemp}, chose: {option}, index: {index}")
             if option == "Suggest":
                 self.showActionDetailView(option)
             elif option == "Accuse":
@@ -251,12 +261,19 @@ class MainWindow(QMainWindow):
         if option == "Suggest":
             self.ui.Actions_ConfirmBtn.setStyleSheet("background: #626262; color: #FFFFFF")
         elif option == "Accuse":
-            self.ui.Actions_ConfirmBtn.setText(option)
             self.ui.Actions_ConfirmBtn.setStyleSheet("background: #cf2c2b; color: #FFFFFF")
         else:
             self.ui.Actions_ConfirmBtn.setText(f"This is not correct: {option}")
         global _LivingCharacters
-        self.ui.Actions_SuspectComboBox.addItems(_LivingCharacters)
+        self.ui.Actions_SuspectComboBox.clear()
+        self.ui.Actions_WeaponComboBox.clear()
+        self.ui.Actions_RoomComboBox.clear()
+        tList = _LivingCharacters
+        try:
+            tList.remove(_PlayerCharacter)
+        except:
+            pass
+        self.ui.Actions_SuspectComboBox.addItems(tList)
         self.ui.Actions_WeaponComboBox.addItems(WEAPONS.copy())
         self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
         self.ui.Actions_SuspectComboBox.setCurrentIndex(0)
@@ -281,6 +298,8 @@ class MainWindow(QMainWindow):
 
     def getAvailableMovement(self, options: list):
         print("getAvailableMovement")
+        self.ui.GamePlay_Action_Move.setEnabled(False)
+        self.ui.GamePlay_Action_Move.setFlat(True)
         global _PlayerLocation
         fullDirection = Converters.GetMovableDirection(_PlayerLocation)
         adjacentLocations = Converters.GetAdjacentLocations(_PlayerLocation)
@@ -397,22 +416,29 @@ class MainWindow(QMainWindow):
             self.ui.GamePlay_MapGrid.addWidget(point,characterMapCoord[1],characterMapCoord[0])
         _PlayerLocations = locations
         # also update the living characters
-        global _LivingCharacters
+        global _LivingCharacters, _AllPlayerList
         tList = list(locations.keys())
-        self.populatePlayerList(tList)
-        tList.remove(_PlayerCharacter)
-        _LivingCharacters = tList 
+        if len(_AllPlayerList) == 0 or len(tList) >= len(_AllPlayerList):
+            print("Set all player list")
+            _AllPlayerList = tList.copy()
+        _LivingCharacters = tList
+        self.updatePlayerList()
 
-    def populatePlayerList(self, players: list):
+    def updatePlayerList(self):
         # generate HTML code
         html = ""
-        for player in players:
+        global _AllPlayerList, _LivingCharacters
+        for player in _AllPlayerList:
             color = Converters.GetCharacterColor(player)
-            html += f"<span style=\"color:{color};font-size: 16pt; font-family: \"Segoe UI\";\">{player}<br></span>\n"
+            if player not in _LivingCharacters:
+                html += f"<span style=\"color:{color};font-size: 16pt; font-family: \"Segoe UI\"; text-decoration: line-through;\">{player}<br></span>\n"
+            else:
+                html += f"<span style=\"color:{color};font-size: 16pt; font-family: \"Segoe UI\";\">{player}<br></span>\n"
         self.ui.GamePlay_PlayerList.setHtml(html)
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
+        self.ui.ShowCards_ComboBox.clear()
         self.ui.ShowCards_ComboBox.addItems(options)
         self.ui.ShowCards_ComboBox.setCurrentIndex(0)
         # bind button event
@@ -436,7 +462,7 @@ class MainWindow(QMainWindow):
     def eliminated(self):
         self.ui.Widget_GamePlay_Eliminated.setVisible(True)
         self.ui.Eliminated_WatchGameBtn.clicked.connect(self.hideEliminatedView)
-    
+
     def hideEliminatedView(self):
         self.ui.Widget_GamePlay_Eliminated.setVisible(False)
         # make sure to disable all actions
@@ -584,11 +610,12 @@ class MainWindow(QMainWindow):
     def clearGlobalVariables(self, isPartial: bool = False):
         global _IsGameSessionJoined, _ServerAddress, _PlayerName, _PlayerCharacter , \
             _PlayerCharacter, _PlayerCards, _PlayerOptionsTemp, _LivingCharacters, \
-            _PlayerLocation, _PlayerLocations
+            _PlayerLocation, _PlayerLocations, _AllPlayerList
         if isPartial:
             _PlayerCharacter = ""
             _PlayerCards = []
             _PlayerOptionsTemp = []
+            _AllPlayerList = []
             _LivingCharacters = []
             _PlayerLocation = ""
             _PlayerLocations = {}
@@ -599,6 +626,7 @@ class MainWindow(QMainWindow):
             _PlayerCharacter = ""
             _PlayerCards = []
             _PlayerOptionsTemp = []
+            _AllPlayerList = []
             _LivingCharacters = []
             _PlayerLocation = ""
             _PlayerLocations = {}

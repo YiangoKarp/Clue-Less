@@ -73,9 +73,13 @@ def main(mode = 'initial'):
     while not gm.game_over:
         player_going = gm.players[gm.player_num_going]
         end_turn = gm.run_turn(player_going)
+        '''
         if end_turn == "Accuse":
             gm.run_accusation(player_going)
         else:
+            gm.broadcast(player_going.username + " ended their turn.")
+        '''
+        if end_turn == "End Turn":
             gm.broadcast(player_going.username + " ended their turn.")
         # Only move to the next turn (i.e. find the next un-eliminated player) if the game is not over
         if not gm.game_over:

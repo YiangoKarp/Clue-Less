@@ -106,7 +106,12 @@ class ServerConnectionHandler():
 
         for client in self.clients:
             client.send("Vote".encode('utf-8'))
-            selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            selection = 0
+            try:
+                selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            except:
+                # default to 2
+                selection = 2
             print("Voted:", selection)
             if selection == 1:
                 play_again_tally += 1
