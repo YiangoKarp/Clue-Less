@@ -112,7 +112,7 @@
      <widget class="QPushButton" name="Btn_ConfirmPlayer">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>250</y>
         <width>421</width>
         <height>41</height>
@@ -137,7 +137,7 @@
      <widget class="QLineEdit" name="Entry_2">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>138</y>
         <width>421</width>
         <height>35</height>
@@ -162,7 +162,7 @@
      <widget class="QLabel" name="Label_JoinErrorMsg_2">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>180</y>
         <width>421</width>
         <height>41</height>
@@ -187,7 +187,7 @@
      <widget class="QLabel" name="EntryLabel_2">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>90</y>
         <width>145</width>
         <height>29</height>
@@ -246,7 +246,7 @@
      <widget class="QPushButton" name="Btn_JoinServer">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>250</y>
         <width>421</width>
         <height>41</height>
@@ -271,7 +271,7 @@
      <widget class="QLineEdit" name="Entry">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>138</y>
         <width>421</width>
         <height>35</height>
@@ -299,7 +299,7 @@
      <widget class="QLabel" name="Label_JoinErrorMsg">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>180</y>
         <width>421</width>
         <height>41</height>
@@ -324,7 +324,7 @@
      <widget class="QLabel" name="EntryLabel">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>190</x>
         <y>90</y>
         <width>145</width>
         <height>29</height>
@@ -383,7 +383,7 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>135</x>
         <y>50</y>
         <width>531</width>
         <height>101</height>
@@ -2151,7 +2151,7 @@
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: #626262; font-size: 10pt;</string>
+      <string notr="true">background: #626262; font-size: 14pt; </string>
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
@@ -2252,7 +2252,7 @@
     <widget class="QFrame" name="Actions_Frame">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>240</x>
        <y>110</y>
        <width>321</width>
        <height>381</height>
@@ -2404,7 +2404,7 @@
     <widget class="QFrame" name="PickCharacter_Frame">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>240</x>
        <y>100</y>
        <width>321</width>
        <height>381</height>
@@ -2502,7 +2502,7 @@
     <widget class="QFrame" name="Waiting_Frame">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>240</x>
        <y>240</y>
        <width>321</width>
        <height>111</height>
@@ -2568,7 +2568,7 @@
     <widget class="QFrame" name="ShowCards_Frame">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>240</x>
        <y>100</y>
        <width>321</width>
        <height>381</height>

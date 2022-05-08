@@ -390,8 +390,7 @@ class MainWindow(QMainWindow):
         global _LivingCharacters
         tList = list(locations.keys())
         tList.remove(_PlayerCharacter)
-        _LivingCharacters = tList
-            
+        _LivingCharacters = tList 
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
