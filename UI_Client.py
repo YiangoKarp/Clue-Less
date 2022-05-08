@@ -596,6 +596,7 @@ class MainWindow(QMainWindow):
             self.ui.GamePlay_Action_Accuse.clicked.disconnect(partial(self.sendActionChoice, "Accuse"))
             self.ui.GamePlay_Action_EndTurn.clicked.disconnect(partial(self.sendActionChoice, "End Turn"))
             self.ui.GamePlay_Action_Move.clicked.disconnect(partial(self.sendActionChoice, "Move"))
+            self.ui.Actions_CancelBtn.clicked.connect(partial(self.sendActionChoice, "Cancel"))
             self.ui.GamePlay_NavRight.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Right))
             self.ui.GamePlay_NavLeft.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Left))
             self.ui.GamePlay_NavUp.clicked.disconnect(partial(self.sendMovement, Enums.EDirection.Up))
