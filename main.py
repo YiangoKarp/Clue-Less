@@ -67,6 +67,8 @@ def main(mode = 'initial'):
     # Initialize GameManager
     gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
 
+    gm.initialDataPush()
+
     # Run the game
     while not gm.game_over:
         player_going = gm.players[gm.player_num_going]

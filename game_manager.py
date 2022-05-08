@@ -46,21 +46,28 @@ class GameManager:
         json_player_locations = json.dumps(player_locations)
         return json_player_locations
 
-    def run_turn(self, player):
+    def initialDataPush(self):
         json_player_locations = self.getCurrentMap()
         self.broadcast(f"LocationUpdate@{json_player_locations}")
-
         time.sleep(0.25)
+        for player in self.players:
+            playerCards = [card.name for card in player.cards]
+            extraCards = [card.name for card in self.extra_cards]
+            self.message_player(player, f"PlayerCard@{playerCards}")
+            time.sleep(0.25)
+            self.message_player(player, f"ExtraCard@{extraCards}")
+            time.sleep(0.25)
 
+    def run_turn(self, player):
         self.broadcast(f"It is {player.username}'s turn.") 
         # At the start of a turn, add the following console visuals:
         # self.message_player(player,vi.game_map()) # Print the static game map
-        playerCards = f"PlayerCard@{vi.player_cards(player)}"
-        extraCards = f"ExtraCard@{vi.extra_cards(self.extra_cards)}"
-        #print("ServerPlayerCard: ", playerCards)
-        #print("ServerExtraCards: ", extraCards)
-        self.message_player(player, playerCards)# Print a list of the player's cards
-        self.message_player(player, extraCards)# Print the extra cards
+        playerCards = [card.name for card in player.cards]
+        extraCards = [card.name for card in self.extra_cards]
+        self.message_player(player, f"PlayerCard@{playerCards}")
+        time.sleep(0.25)
+        self.message_player(player, f"ExtraCard@{extraCards}")
+        time.sleep(0.25)
 
         # marked as redundant
         #your_cards = [c.name for c in player.cards]
@@ -68,7 +75,6 @@ class GameManager:
         #self.message_player(player, f"Your cards: {your_cards}")
 
         # add artificial delay
-        time.sleep(0.25)
 
         turn = Turn(player)
 
