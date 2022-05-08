@@ -163,10 +163,11 @@ class GameManager:
 
     def receive_player_move_choice(self, player, move_options):
         # move_options will be a list of Location objects (length at least 1, up to 4)
-        options_prompt = f"Your current location is {player.location.name}. Where would you like to move? Your options are: "
+        # options_prompt = f"Your current location is {player.location.name}. Where would you like to move? Your options are: "
         options = [o.name for o in move_options]
-        options_prompt = options_prompt + ', '.join(options)
-
+        options_prompt = f"AvailablePositions@{options}"
+        #options_prompt = options_prompt + options
+        
         # Send options prompt to user and receive their choice as numeric input
         self.message_player(player,options_prompt)
         player_choice_name = str(player.client_id.recv(3000).decode('utf-8')).upper()
@@ -175,9 +176,9 @@ class GameManager:
         # ...
 
         # Find the Location object with the name selected by the player
-        # player_choice = list(filter(lambda option: option.name == player_choice_name, move_options))[0]
+        player_choice = list(filter(lambda option: option.name == player_choice_name, move_options))[0]
 
-        return player_choice_name # Return the location object
+        return player_choice # Return the location object
 
     def move_player(self, player, new_location):
         # Update values of Location object for player's current location

@@ -26,6 +26,7 @@ class Client(QThread):
     s_assignCards = pyqtSignal(list)
     s_actionOptions = pyqtSignal(list)
     s_locationUpdate = pyqtSignal(dict)
+    s_availableLocations = pyqtSignal(list)
     s_showCards = pyqtSignal(list)
     s_addClue = pyqtSignal(str)
     s_eliminated = pyqtSignal()
@@ -53,6 +54,7 @@ class Client(QThread):
         self.s_assignCards.connect(self.gui.s_assignCards.emit)
         self.s_actionOptions.connect(self.gui.s_actionOptions.emit)
         self.s_locationUpdate.connect(self.gui.s_locationUpdate.emit)
+        self.s_availableLocations.connect(self.gui.s_availableLocations.emit)
         self.s_showCards.connect(self.gui.s_showCards.emit)
         self.s_addClue.connect(self.gui.s_addClue.emit)
         self.s_eliminated.connect(self.gui.s_eliminated.emit)
@@ -130,6 +132,10 @@ class Client(QThread):
                             options = json.loads(msg)
                             print(f"LocationUpdate: {options}")
                             self.s_locationUpdate.emit(options)
+                        elif "AvailablePositions@" in msg:
+                            msg = msg.split("@")[1]
+                            options = Converters.Str2List(msg)
+                            self.s_availableLocations.emit(options)
                         elif "ShowCard@" in msg:
                             msg = msg.split("@")[1]
                             options = Converters.Str2List(msg)

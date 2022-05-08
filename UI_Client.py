@@ -33,7 +33,7 @@ _PlayerCards = []
 _PlayerOptionsTemp = []
 _LivingCharacters = []
 _PlayerLocation = ""
-_PlayerLocations = {}
+_PlayerLocations = []
 #endregion global variables
 
 class MainWindow(QMainWindow):
@@ -47,6 +47,7 @@ class MainWindow(QMainWindow):
     s_assignCards = pyqtSignal(list)
     s_actionOptions = pyqtSignal(list)
     s_locationUpdate = pyqtSignal(dict)
+    s_availableLocations = pyqtSignal(list)
     s_showCards = pyqtSignal(list)
     s_addClue = pyqtSignal(str)
     s_eliminated = pyqtSignal()
@@ -83,6 +84,7 @@ class MainWindow(QMainWindow):
         self.s_assignCards.connect(self.assignCards)
         self.s_actionOptions.connect(self.setActionOptions)
         self.s_locationUpdate.connect(self.updateMap)
+        self.s_availableLocations.connect(self.getAvailableMovement)
         self.s_showCards.connect(self.showCardsView)
         self.s_addClue.connect(self.showClues)
         self.s_eliminated.connect(self.eliminated)
@@ -223,7 +225,7 @@ class MainWindow(QMainWindow):
             elif option == "Accuse":
                 self.showActionDetailView(option)
             elif option == "Move":
-                self.getAvailableMovement()
+                # self.getAvailableMovement()
                 # disable other options explicitly
                 self.ui.GamePlay_Action_Suggest.setEnabled(False)
                 self.ui.GamePlay_Action_Suggest.setFlat(True)
@@ -274,9 +276,19 @@ class MainWindow(QMainWindow):
         else:
             self.ui.Widget_GamePlay_Actions.setVisible(False)
 
-    def getAvailableMovement(self):
+    def getAvailableMovement(self, options: list):
+        print("getAvailableMovement")
         global _PlayerLocation
-        availableDirection = Converters.GetMovableDirection(_PlayerLocation)
+        fullDirection = Converters.GetMovableDirection(_PlayerLocation)
+        adjacentLocations = Converters.GetAdjacentLocations(_PlayerLocation)
+        availableIndexes = []
+        for availableLocation in options:
+            try:
+                index = adjacentLocations.index(availableLocation)
+                availableIndexes.append(index)
+            except ValueError as error:
+                pass
+        availableDirection = [fullDirection[i] for i in availableIndexes]
         for j in availableDirection:
             if j == Enums.EDirection.Right:
                 self.ui.GamePlay_NavRight.setEnabled(True)
@@ -295,12 +307,12 @@ class MainWindow(QMainWindow):
                 self.ui.GamePlay_NavTrapDoor.setFlat(False)
                 
     def sendMovement(self, moveTo: Enums.EDirection):
-        global _PlayerLocation
+        global _PlayerLocation, _PlayerLocations, _PlayerCharacter
         nextLocation = Converters.GetAdjacentLocation(_PlayerLocation, moveTo)
         print("NextLocation: ", nextLocation)
         self.gameClient.tx_server(nextLocation)
+        self.gameClient.tx_server("End Turn")
         # modify local map
-        global _PlayerLocations, _PlayerCharacter
         _PlayerLocations[_PlayerCharacter] = nextLocation
         self.updateMap(_PlayerLocations)
 
@@ -320,21 +332,21 @@ class MainWindow(QMainWindow):
         '''
         Map coordinates reference:
         xx 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
-        1  A1 A1 A1          C1 C1 C1          E1 E1 E1
+        1  A1 A1 A1          C1 C1 C1    H1    E1 E1 E1
         2  A1 A1 A1 B1 B1 B1 C1 C1 C1 D1 D1 D1 E1 E1 E1
         3  A1 A1 A1          C1 C1 C1          E1 E1 E1
         4     A2                C2                E2
-        5     A2                C2                E2
+        5  H6 A2                C2                E2 H2
         6     A2                C2                E2
         7  A3 A3 A3          C3 C3 C3          E3 E3 E3
         8  A3 A3 A3 B3 B3 B3 C3 C3 C3 D3 D3 D3 E3 E3 E3
         9  A3 A3 A3          C3 C3 C3          E3 E3 E3
         10    A4                C4                E4
-        11    A4                C4                E4
+        11 H5 A4                C4                E4
         12    A4                C4                E4
         13 A5 A5 A5          C5 C5 C5          E5 E5 E5
         14 A5 A5 A5 B5 B5 B5 C5 C5 C5 D5 D5 D5 E5 E5 E5
-        15 A5 A5 A5          C5 C5 C5          E5 E5 E5
+        15 A5 A5 A5    H4    C5 C5 C5    H3    E5 E5 E5
 
         Center point of each area (Y,X):
         Study(A1): (2,2)
@@ -354,13 +366,19 @@ class MainWindow(QMainWindow):
             Kitchen(E5): (13,13)
         '''
         print(f"Locations Update Map: {locations}")
-        isLocationSet = False
         global _PlayerLocations
-        _PlayerLocations = locations
+        if len(_PlayerLocations) > 0:
+                for loc in _PlayerLocations:
+                    previousCoord = Converters.GetMapCoord(loc)
+                    previousItem = self.ui.GamePlay_MapGrid.itemAtPosition(previousCoord[1], previousCoord[0])
+                    if previousItem is not None:
+                        self.ui.GamePlay_MapGrid.removeItem(previousItem)
+        isLocationSet = False
         for character, location in locations.items():
             # get character color
             characterColor = Converters.GetCharacterColor(character)
-            characterLocationID = Converters.GetLocationID(location)
+            # characterLocationID = Converters.GetLocationID(location)
+            characterLocationID = location
             global _PlayerCharacter
             if not isLocationSet:
                 if character == _PlayerCharacter:
@@ -373,10 +391,8 @@ class MainWindow(QMainWindow):
             point.setStyleSheet(f"font-family: 'Segoe UI'; font-size: 12pt; background: {characterColor};")
             point.setFixedHeight(20)
             point.setFixedWidth(20)
-            previousItem = self.ui.GamePlay_MapGrid.itemAtPosition(characterMapCoord[1], characterMapCoord[0])
-            if previousItem is not None:
-                self.ui.GamePlay_MapGrid.removeItem(previousItem)
             self.ui.GamePlay_MapGrid.addWidget(point,characterMapCoord[1],characterMapCoord[0])
+        _PlayerLocations = locations
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)
