@@ -64,6 +64,7 @@ class ServerConnectionHandler():
         while len(self.clients) < self.n_players:
             client, ip = self.server.accept()
             self.clients.append(client) # Add client to roster
+            time.sleep(0.25)
             username = self.assign_username(client) # Prompt client for their username
             # self.broadcast(Fore.BLUE + f'{username} has joined the game!' + Style.RESET_ALL)
             pbar.update(1)
