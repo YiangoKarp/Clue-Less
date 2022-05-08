@@ -191,6 +191,8 @@ class MainWindow(QMainWindow):
         global _PlayerCharacter
         _PlayerCharacter = self.ui.PickCharacter_comboBox.itemData(self.ui.PickCharacter_comboBox.currentIndex(), 2) # QUserRole=2, voodoo magic. don't know what that is.
         self.ui.GamePlay_PlayerCharacter.setText(_PlayerCharacter)
+        color = Converters.GetCharacterColor(_PlayerCharacter)
+        self.ui.GamePlay_PlayerCharacter.setStyleSheet(f"color: {color};")
         self.gameClient.tx_server(str(selection))
         self.ui.Widget_GamePlay_PickCharacter.setVisible(False)
 
@@ -389,8 +391,17 @@ class MainWindow(QMainWindow):
         # also update the living characters
         global _LivingCharacters
         tList = list(locations.keys())
+        self.populatePlayerList(tList)
         tList.remove(_PlayerCharacter)
         _LivingCharacters = tList 
+
+    def populatePlayerList(self, players: list):
+        # generate HTML code
+        html = ""
+        for player in players:
+            color = Converters.GetCharacterColor(player)
+            html += f"<span style=\"color:{color};font-size: 16pt; font-family: \"Segoe UI\";\">{player}<br></span>\n"
+        self.ui.GamePlay_PlayerList.setHtml(html)
 
     def showCardsView(self, options: list):
         self.ui.Widget_GamePlay_ShowCards.setVisible(True)

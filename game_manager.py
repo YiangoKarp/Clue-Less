@@ -47,8 +47,12 @@ class GameManager:
         return json_player_locations
 
     def run_turn(self, player):
-        self.broadcast(f"It is {player.username}'s turn.")
+        json_player_locations = self.getCurrentMap()
+        self.broadcast(f"LocationUpdate@{json_player_locations}")
 
+        time.sleep(0.25)
+
+        self.broadcast(f"It is {player.username}'s turn.") 
         # At the start of a turn, add the following console visuals:
         # self.message_player(player,vi.game_map()) # Print the static game map
         playerCards = f"PlayerCard@{vi.player_cards(player)}"
@@ -67,9 +71,6 @@ class GameManager:
         time.sleep(0.25)
 
         turn = Turn(player)
-
-        json_player_locations = self.getCurrentMap()
-        self.message_player(player, f"LocationUpdate@{json_player_locations}")
 
         # Get the movement options available to the player
         # player_move_options = turn.generate_player_move_options(player)

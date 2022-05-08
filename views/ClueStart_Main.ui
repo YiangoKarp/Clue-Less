@@ -2188,6 +2188,9 @@
      <property name="styleSheet">
       <string notr="true">background: #626262; font-size: 10pt;</string>
      </property>
+     <property name="lineWrapMode">
+      <enum>QTextEdit::WidgetWidth</enum>
+     </property>
     </widget>
     <widget class="QPushButton" name="GamePlay_Action_Move">
      <property name="geometry">
