@@ -1,11 +1,10 @@
 # turn.py
-from player import Player
-from location import Location
-from card import Card
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from player import Player
 
 class Turn:
-    def __init__(self, player):
+    def __init__(self, player: 'Player'):
         self.player = player
         self.moved = False
         self.suggested = False
@@ -37,4 +36,14 @@ class Turn:
         for move in moves:
             if not move.moveable:
                 moves.remove(move)
+        return moves
+
+    def adv_generate_player_move_options(self, playerLocation:str, reference: dict):
+        from utils import MapHelper
+        adjacentLocations = MapHelper.GetAdjacentLocations(playerLocation)
+        playersLocations = reference.values()
+        moves = []
+        for location in adjacentLocations:
+            if location not in playersLocations:
+                moves.append(location)
         return moves

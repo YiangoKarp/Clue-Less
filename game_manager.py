@@ -2,15 +2,19 @@ import time
 import json
 
 #from card import Card
-from player import Player
+
 #from location import Location
 from turn import Turn
 #import console_visuals as vi
 
 #from utils import Converters
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from location import Location
+    from player import Player
 
 class GameManager:
-    def __init__(self, players: list[Player], extra_cards, case_file_cards):
+    def __init__(self, players: list['Player'], extra_cards, case_file_cards):
         self.players = players
         # All Card objects are referencable through the players besides extra cards and case file cards
         self.extra_cards = extra_cards
@@ -62,7 +66,7 @@ class GameManager:
             self.message_player(player, f"ExtraCard@{extraCards}")
             time.sleep(0.25)
 
-    def run_turn(self, player):
+    def run_turn(self, player: 'Player'):
         self.broadCastMapUpdate()
         time.sleep(0.25)
         self.broadcast(f"It is {player.username}'s turn.") 
@@ -104,6 +108,7 @@ class GameManager:
             if player_choice == "Move":
                 # Get the movement options available to the player
                 player_move_options = turn.generate_player_move_options(player)
+                #player_move_options = turn.adv_generate_player_move_options(player.location.name, json.loads(self.getCurrentMap()))
                 # Receive player's move choice
                 player_move_choice = self.receive_player_move_choice(player, player_move_options)
                 # Move the player
@@ -165,7 +170,7 @@ class GameManager:
         # GameManager will act differently, depending on the result of the turn
         return player_choice
 
-    def receive_player_choice(self, player, player_options):
+    def receive_player_choice(self, player: 'Player', player_options: list):
         #options = ''
         #for i in enumerate(player_options):
             #options += f'[{i[0]+1}] {i[1]}\n'
@@ -204,7 +209,7 @@ class GameManager:
         choices = choiceString.split("@")
         return choices
 
-    def receive_player_move_choice(self, player, move_options):
+    def receive_player_move_choice(self, player: 'Player', move_options: list['Location']):
         # move_options will be a list of Location objects (length at least 1, up to 4)
         # options_prompt = f"Your current location is {player.location.name}. Where would you like to move? Your options are: "
         options = [o.name for o in move_options]
@@ -224,7 +229,7 @@ class GameManager:
 
         return player_choice # Return the location object
 
-    def move_player(self, player, new_location):
+    def move_player(self, player: 'Player', new_location: 'Location'):
         # Update values of Location object for player's current location
         player.location.players_present.remove(player)
         if player.location.max_players > len(player.location.players_present):
