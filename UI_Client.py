@@ -264,11 +264,11 @@ class MainWindow(QMainWindow):
             self.ui.Actions_ConfirmBtn.setStyleSheet("background: #cf2c2b; color: #FFFFFF")
         else:
             self.ui.Actions_ConfirmBtn.setText(f"This is not correct: {option}")
-        global _LivingCharacters
         self.ui.Actions_SuspectComboBox.clear()
         self.ui.Actions_WeaponComboBox.clear()
         self.ui.Actions_RoomComboBox.clear()
-        tList = _LivingCharacters
+        global _PlayerCharacter
+        tList = SUSPECTS.copy()
         try:
             tList.remove(_PlayerCharacter)
         except:
