@@ -265,17 +265,20 @@ class MainWindow(QMainWindow):
         else:
             self.ui.Actions_ConfirmBtn.setText(f"This is not correct: {option}")
         global _LivingCharacters
+        global _PlayerLocation
         self.ui.Actions_SuspectComboBox.clear()
         self.ui.Actions_WeaponComboBox.clear()
         self.ui.Actions_RoomComboBox.clear()
-        tList = _LivingCharacters
-        try:
-            tList.remove(_PlayerCharacter)
-        except:
-            pass
+        tList = SUSPECTS.copy()
+        #tList = _LivingCharacters
+        #try:
+        #    tList.remove(_PlayerCharacter)
+        #except:
+        #    pass
         self.ui.Actions_SuspectComboBox.addItems(tList)
         self.ui.Actions_WeaponComboBox.addItems(WEAPONS.copy())
-        self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
+        #self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
+        self.ui.Actions_RoomComboBox.addItems(_PlayerLocation)
         self.ui.Actions_SuspectComboBox.setCurrentIndex(0)
         self.ui.Actions_WeaponComboBox.setCurrentIndex(0)
         self.ui.Actions_RoomComboBox.setCurrentIndex(0)
