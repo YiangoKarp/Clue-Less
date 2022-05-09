@@ -36,15 +36,15 @@ def main(mode = 'initial'):
 
     if(mode in ['initial']):
         # Create the Server Connection Handler for the initial game.
-        p = subprocess.Popen('python game_driver.py', shell=False)
+        # p = subprocess.Popen('python game_driver.py', shell=False)
         global sch
         sch = ServerConnectionHandler()
 
     if(mode in ['initial', 'kicked']):
         # Wait for clients to connect
         sch.muster_clients()
-        sch.broadcast(Fore.GREEN + 'All players have joined.' + Style.RESET_ALL)
-        sch.broadcast(vi.game_logo())
+        sch.broadcast('GameReady')
+        # sch.broadcast(vi.game_logo())
 
     available_characters = ['Miss Scarlet', 'Col. Mustard', 'Mrs. White', 'Mr. Green', 'Mrs. Peacock', 'Prof. Plum']
 
@@ -63,17 +63,23 @@ def main(mode = 'initial'):
     gi.generate_game_map()
     gi.initialize_player_locations()
 
-    sch.broadcast("Starting Game!")
+    # sch.broadcast("Starting Game!") marked as redundant
     # Initialize GameManager
     gm = GameManager(gi.players, gi.extra_cards, gi.case_file_cards)
+
+    gm.initialDataPush()
 
     # Run the game
     while not gm.game_over:
         player_going = gm.players[gm.player_num_going]
         end_turn = gm.run_turn(player_going)
+        '''
         if end_turn == "Accuse":
             gm.run_accusation(player_going)
         else:
+            gm.broadcast(player_going.username + " ended their turn.")
+        '''
+        if end_turn == "End Turn":
             gm.broadcast(player_going.username + " ended their turn.")
         # Only move to the next turn (i.e. find the next un-eliminated player) if the game is not over
         if not gm.game_over:
@@ -82,6 +88,7 @@ def main(mode = 'initial'):
     gm.end_game()
 
     sch.broadcast('Each player will now vote if they want to play another game.')
+    time.sleep(0.25)
     if sch.play_again_vote():
         # Restart Game.
         main(mode = 'restart')

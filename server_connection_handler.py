@@ -48,13 +48,17 @@ class ServerConnectionHandler():
         self.server.bind((host, 8080))
         self.server.listen(self.n_players)
 
-    def broadcast(self, msg):
+    def broadcast(self, msg: str):
         '''Send a message to all clients'''
-        print(f"[Broadcast Message] {msg}")
+        if "@" in msg:
+            printMsg = msg.split("@")[1]
+            print(f"[Broadcast Message] {printMsg}")
+        else:    
+            print(f"[Broadcast Message] {msg}")
         for c in self.clients:
-            c.send(f"[Broadcast Message] {msg}\n".encode('utf-8'))
+            c.send(f"BM_{msg}".encode('utf-8'))
 
-    def message_client(client, msg):
+    def message_client(client, msg: str):
         '''Send a message to a specific client'''
         client.send(msg.encode('utf-8')) # Message user
 
@@ -64,33 +68,31 @@ class ServerConnectionHandler():
         while len(self.clients) < self.n_players:
             client, ip = self.server.accept()
             self.clients.append(client) # Add client to roster
+            time.sleep(0.25)
             username = self.assign_username(client) # Prompt client for their username
-            self.broadcast(Fore.BLUE + f'{username} has joined the game!' + Style.RESET_ALL)
+            # self.broadcast(Fore.BLUE + f'{username} has joined the game!' + Style.RESET_ALL)
             pbar.update(1)
         pbar.close()
 
-    def assign_username(self, client):
+    def assign_username(self, client: socket.socket):
         '''Request that the client provide a username'''
-        client.send('What would you like your username to be?: '.encode('utf-8'))
+        client.send('AssignUserName'.encode('utf-8'))
         username = client.recv(3000).decode('utf-8')
-
         # TODO implement username validation and checking for duplicates
 
         self.users[username] = client # Save the username to client association
-        client.send(f'Welcome, {username}!\n'.encode('utf-8'))
+        # client.send(f'Welcome, {username}!\n'.encode('utf-8'))
         return username
 
-    def choose_character(self, client, available_characters):
+    def choose_character(self, client: socket.socket, available_characters: list):
         '''Prompt the user to choose an available character'''
-        options = ''
-        for i in enumerate(available_characters):
-            options += f'[{i[0]+1}] {i[1]}\n'
+        options = available_characters
 
-        client.send(f'Please choose a character: \n{options}'.encode('utf-8'))
+        client.send(f'AssignCharacter@{options}'.encode('utf-8'))
         selection = int(client.recv(3000).decode('utf-8')) # Get the players selection number
         selected_character = available_characters[selection-1]
         available_characters.remove(selected_character) # Player has chosen character, remove it from list
-        client.send(f'You have selected {selected_character}!'.encode('utf-8'))
+        #client.send(f'You have selected {selected_character}!\n'.encode('utf-8'))
 
         return selected_character
 
@@ -100,27 +102,34 @@ class ServerConnectionHandler():
         Returns:
             boolean: Whether or not to play again
         '''
-
         play_again_tally = 0
 
         for client in self.clients:
-            client.send('Would you like to play again?\n [1] Yes [2] No'.encode('utf-8'))
-            selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            client.send("Vote".encode('utf-8'))
+            selection = 0
+            try:
+                selection = int(client.recv(3000).decode('utf-8')) # Get the player's vote
+            except:
+                # default to 2
+                selection = 2
+            print("Voted:", selection)
             if selection == 1:
                 play_again_tally += 1
 
         vote = play_again_tally/len(self.clients)
-        if vote > 0.5:
+        if vote >= 0.5:
             # Majority voted to play again
-            self.broadcast('The majority vote is to play again!')
+            self.broadcast('PlayAgain')
+            time.sleep(1)   # give enough time for client to refresh
             return True
-        elif vote == 0.5:
+        #elif vote == 0.5:
             # Equal vote on both sides
-            self.broadcast('The vote was 50-50. Please make up your minds and vote again!')
-            self.play_again_vote(self)
+            #self.broadcast('The vote was 50-50. Please make up your minds and vote again!')
+            #self.play_again_vote(self)
         else:
             # Majority voted to stop playing
-            self.broadcast("The majority voted to stop playing. Goodbye!")
+            # self.broadcast("The majority voted to stop playing. Goodbye!")
+            self.broadcast('Kick')
             return False
 
     def kick_players(self):
@@ -128,6 +137,7 @@ class ServerConnectionHandler():
         # Send message client app to signal disconnection
         for client in self.clients:
             client.send('kick'.encode('utf-8'))
+            time.sleep(0.25)
         self.clients = [] # Wipe clients from SCH
         
 
