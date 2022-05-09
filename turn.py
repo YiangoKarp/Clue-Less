@@ -38,6 +38,7 @@ class Turn:
                 moves.remove(move)
         return moves
 
+    '''
     def adv_generate_player_move_options(self, playerLocation:str, reference: dict):
         from utils import MapHelper
         adjacentLocations = MapHelper.GetAdjacentLocations(playerLocation)
@@ -47,3 +48,4 @@ class Turn:
             if location not in playersLocations:
                 moves.append(location)
         return moves
+    '''
