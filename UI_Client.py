@@ -262,19 +262,29 @@ class MainWindow(QMainWindow):
             self.ui.Actions_ConfirmBtn.setStyleSheet("background: #cf2c2b; color: #FFFFFF")
         else:
             self.ui.Actions_ConfirmBtn.setText(f"This is not correct: {option}")
+        global _LivingCharacters
+        global _PlayerLocation
+        locationDict = {
+            "A1" : "Study", "A3" : "Hall", "A5" : "Lounge", "C1" : "Library", "C3" : "Billiard Room",
+            "C5" : "Dining Room", "E1" : "Conservatory", "E3" : "Ballroom", "E5" : "Kitchen"
+        }
         self.ui.Actions_SuspectComboBox.clear()
         self.ui.Actions_WeaponComboBox.clear()
         self.ui.Actions_RoomComboBox.clear()
-
-        global _PlayerCharacter
         tList = SUSPECTS.copy()
-        try:
-            tList.remove(_PlayerCharacter)
-        except:
-            pass
+        #tList = _LivingCharacters
+        #try:
+        #    tList.remove(_PlayerCharacter)
+        #except:
+        #    pass
+        if option == "Suggest":
+            roomList = [locationDict.get(_PlayerLocation)]
+        elif option == "Accuse":
+            roomList = ROOMS.copy()
         self.ui.Actions_SuspectComboBox.addItems(tList)
         self.ui.Actions_WeaponComboBox.addItems(WEAPONS.copy())
-        self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
+        #self.ui.Actions_RoomComboBox.addItems(ROOMS.copy())
+        self.ui.Actions_RoomComboBox.addItems(roomList)
         self.ui.Actions_SuspectComboBox.setCurrentIndex(0)
         self.ui.Actions_WeaponComboBox.setCurrentIndex(0)
         self.ui.Actions_RoomComboBox.setCurrentIndex(0)
