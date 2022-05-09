@@ -5,15 +5,13 @@
 # darkmode color design guide: https://uxdesign.cc/dark-mode-ui-design-the-definitive-guide-part-1-color-53dcfaea5129
 # style sheet: https://doc.qt.io/qt-5/stylesheet-reference.html
 
-from operator import ne
 import sys
-import threading
 from functools import partial
 
 from PyQt6.QtWidgets import *
 from PyQt6 import uic
 from PyQt6.QtCore import QThread, pyqtSignal
-from PyQt6.QtGui import QStandardItemModel, QStandardItem, QTextCursor
+from PyQt6.QtGui import QTextCursor
 
 from client import Client
 
