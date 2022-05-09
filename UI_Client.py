@@ -265,8 +265,8 @@ class MainWindow(QMainWindow):
         global _LivingCharacters
         global _PlayerLocation
         locationDict = {
-            "A1" : "Study", "A3" : "Hall", "A5" : "Lounge", "C1" : "Library", "C3" : "Billiard Room",
-            "C5" : "Dining Room", "E1" : "Conservatory", "E3" : "Ballroom", "E5" : "Kitchen"
+            "A1" : "Study", "C1" : "Hall", "E1" : "Lounge", "A3" : "Library", "C3" : "Billiard Room",
+            "E3" : "Dining Room", "A5" : "Conservatory", "C5" : "Ballroom", "E5" : "Kitchen"
         }
         self.ui.Actions_SuspectComboBox.clear()
         self.ui.Actions_WeaponComboBox.clear()
