@@ -9,7 +9,7 @@ class Turn:
         self.moved = False
         self.suggested = False
 
-    def generate_player_options(self, player):
+    def generate_player_options(self, player: 'Player'):
         options = []
         move_options = self.generate_player_move_options(player)
 
@@ -30,7 +30,7 @@ class Turn:
 
         return options
 
-    def generate_player_move_options(self, player):
+    def generate_player_move_options(self, player: 'Player'):
         '''Return a list of Locations adjacent to the player's current location'''
         moves = player.location.adjacent_locations
         for move in moves:
